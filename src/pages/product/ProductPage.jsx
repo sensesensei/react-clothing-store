@@ -1,9 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import courses from '../data/courses';
+import courses from '../../features/products/data/courses';
 import { useEffect } from 'react';
 
-function SingleCourses() {
+function ProductPage() {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -38,4 +38,4 @@ function SingleCourses() {
   );
 }
 
-export default SingleCourses;
+export default ProductPage;

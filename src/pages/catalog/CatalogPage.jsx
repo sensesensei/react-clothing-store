@@ -1,9 +1,9 @@
 import queryString from 'query-string';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import courses from '../data/courses';
-import ProductGrid from './ProductGrid';
-import './Catalog.css';
+import courses from '../../features/products/data/courses';
+import ProductGrid from '../../features/products/components/ProductGrid';
+import './CatalogPage.css';
 
 const SORT_KEYS = ['title', 'slug', 'id'];
 
@@ -16,7 +16,7 @@ function sortCourses(courses, key) {
   return sortedCourses;
 }
 
-function Catalog() {
+function CatalogPage() {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const navigate = useNavigate();
@@ -95,4 +95,4 @@ function Catalog() {
   );
 }
 
-export default Catalog;
+export default CatalogPage;

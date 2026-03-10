@@ -1,4 +1,4 @@
-function Cart() {
+function CartPage() {
   return (
     <div className="cart">
       <h1>Корзина</h1>
@@ -6,4 +6,4 @@ function Cart() {
   );
 }
 
-export default Cart;
+export default CartPage;

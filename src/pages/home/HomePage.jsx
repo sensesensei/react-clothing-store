@@ -1,8 +1,8 @@
-import ProductGrid from './ProductGrid';
-import courses from '../data/courses';
-import './Home.css';
+import ProductGrid from '../../features/products/components/ProductGrid';
+import courses from '../../features/products/data/courses';
+import './HomePage.css';
 
-function Home() {
+function HomePage() {
   return (
     <div className="home-wrapper">
       <div className="home-hero">
@@ -15,4 +15,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default HomePage;

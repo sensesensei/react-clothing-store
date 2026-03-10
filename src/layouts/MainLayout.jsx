@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import Menu from '../components/Menu';
-import CategoryMenu from '../components/CategoryMenu';
+import Menu from '../components/navigation/Menu';
+import CategoryMenu from '../components/navigation/CategoryMenu';
 
 function MainLayout() {
   const location = useLocation();

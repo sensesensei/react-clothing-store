@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './components/Home';
-import About from './components/About';
-import Contact from './components/Contact';
-import Catalog from './components/Catalog';
+import HomePage from './pages/home/HomePage';
+import AboutPage from './pages/about/AboutPage';
+import ContactPage from './pages/contact/ContactPage';
+import CatalogPage from './pages/catalog/CatalogPage';
 import MainLayout from './layouts/MainLayout';
-import SingleCourses from './components/SingleCourses';
-import Cart from './components/Cart';
-import Login from './components/Login';
-import Register from './components/Register';
-import NotFound from './components/NotFount';
+import ProductPage from './pages/product/ProductPage';
+import CartPage from './pages/cart/CartPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import NotFoundPage from './pages/not-found/NotFoundPage';
 import './App.css';
 
 function App() {
@@ -17,15 +17,15 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<MainLayout />}>
-            <Route index element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/catalog/:slug" element={<SingleCourses />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFound />} />
+            <Route index element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
+            <Route path="/catalog/:slug" element={<ProductPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </div>
