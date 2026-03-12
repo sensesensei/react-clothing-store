@@ -1,64 +1,140 @@
 import queryString from 'query-string';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import courses from '../../features/products/data/courses';
+import { useEffect, useMemo, useState } from 'react';
+import { getProducts } from '../../services/api/productsApi';
 import ProductGrid from '../../features/products/components/ProductGrid';
 import './CatalogPage.css';
 
 const SORT_KEYS = ['title', 'slug', 'id'];
 
-function sortCourses(courses, key) {
-  const sortedCourses = [...courses];
+function sortProducts(products, key) {
+  const sortedProducts = [...products];
+
   if (!key || !SORT_KEYS.includes(key)) {
-    return sortedCourses;
+    return sortedProducts;
   }
-  sortedCourses.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-  return sortedCourses;
+
+  sortedProducts.sort((a, b) => {
+    const aValue = a[key];
+    const bValue = b[key];
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return aValue.localeCompare(bValue);
+    }
+
+    if (aValue === bValue) {
+      return 0;
+    }
+
+    return aValue > bValue ? 1 : -1;
+  });
+
+  return sortedProducts;
 }
 
 function CatalogPage() {
   const location = useLocation();
-  const query = queryString.parse(location.search);
   const navigate = useNavigate();
-  const [sortkey, setSortKey] = useState(query.sort);
+  const query = queryString.parse(location.search);
+
+  const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortedCourses, setSortedCourses] = useState(
-    sortCourses(courses, sortkey),
-  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const sortKey = query.sort;
+  const category = query.category;
 
   useEffect(() => {
-    if (sortkey && !SORT_KEYS.includes(sortkey)) {
-      navigate('.');
-      setSortKey();
-      setSortedCourses([...courses]);
+    if (sortKey && !SORT_KEYS.includes(sortKey)) {
+      navigate('.', { replace: true });
     }
-  }, [sortkey, navigate]);
+  }, [sortKey, navigate]);
 
-  // Обновляем сортировку и список при изменении параметров в URL
   useEffect(() => {
-    const q = queryString.parse(location.search);
-    const newSort = q.sort;
-    setSortKey(newSort);
-    setSortedCourses(sortCourses(courses, newSort));
-  }, [location.search]);
+    let isMounted = true;
 
-  // Фильтруем товары по категории
-  const categoryCourses = query.category
-    ? sortedCourses.filter(
-        (course) =>
-          course.category &&
-          course.category.toLowerCase() === query.category.toLowerCase(),
-      )
-    : sortedCourses;
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setError('');
 
-  // Фильтруем товары по поиску (и по категории одновременно)
-  const filteredCourses = categoryCourses.filter((course) => {
+        const data = await getProducts();
+
+        if (isMounted) {
+          setProducts(data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err.message || 'Не удалось загрузить товары');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const sortedProducts = useMemo(() => {
+    return sortProducts(products, sortKey);
+  }, [products, sortKey]);
+
+  const categoryProducts = useMemo(() => {
+    if (!category) {
+      return sortedProducts;
+    }
+
+    const categoryValue = String(category).toLowerCase();
+
+    return sortedProducts.filter((product) => {
+      const categorySlug = product.categories?.slug?.toLowerCase();
+      const categoryName = product.categories?.name?.toLowerCase();
+
+      return categorySlug === categoryValue || categoryName === categoryValue;
+    });
+  }, [sortedProducts, category]);
+
+  const categoryLabel = useMemo(() => {
+    if (!category) {
+      return '';
+    }
+
+    const categoryValue = String(category).toLowerCase();
+    const matchedProduct = products.find((product) => {
+      const categorySlug = product.categories?.slug?.toLowerCase();
+      const categoryName = product.categories?.name?.toLowerCase();
+
+      return categorySlug === categoryValue || categoryName === categoryValue;
+    });
+
+    return matchedProduct?.categories?.name || String(category);
+  }, [products, category]);
+
+  const filteredProducts = useMemo(() => {
     const searchLower = searchQuery.toLowerCase();
-    return (
-      course.title.toLowerCase().includes(searchLower) ||
-      course.slug.toLowerCase().includes(searchLower)
-    );
-  });
+
+    return categoryProducts.filter((product) => {
+      const title = product.title?.toLowerCase() || '';
+      const slug = product.slug?.toLowerCase() || '';
+
+      return title.includes(searchLower) || slug.includes(searchLower);
+    });
+  }, [categoryProducts, searchQuery]);
+
+  if (loading) {
+    return <p>Загрузка товаров...</p>;
+  }
+
+  if (error) {
+    return <p>Ошибка: {error}</p>;
+  }
 
   return (
     <div className="catalog-container">
@@ -70,25 +146,28 @@ function CatalogPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-input"
         />
-        {searchQuery && (
+
+        {searchQuery ? (
           <span className="search-results-count">
-            Найдено: {filteredCourses.length}
+            Найдено: {filteredProducts.length}
           </span>
-        )}
-        {query.category && (
+        ) : null}
+
+        {category ? (
           <span className="category-label">
-            Категория: <strong>{query.category}</strong>
+            Категория: <strong>{categoryLabel}</strong>
           </span>
-        )}
+        ) : null}
       </div>
+
       <ProductGrid
-        products={filteredCourses}
+        products={filteredProducts}
         title={
-          query.category
-            ? `${query.category}`
-            : sortkey
-              ? `сортировка по ${sortkey}`
-              : 'каталог'
+          category
+            ? categoryLabel
+            : sortKey
+              ? `Сортировка по ${sortKey}`
+              : 'Каталог'
         }
       />
     </div>

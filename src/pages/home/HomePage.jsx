@@ -1,8 +1,42 @@
+import { useEffect, useState } from 'react';
 import ProductGrid from '../../features/products/components/ProductGrid';
-import courses from '../../features/products/data/courses';
+import { getProducts } from '../../services/api/productsApi';
 import './HomePage.css';
 
 function HomePage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      try {
+        const data = await getProducts();
+
+        if (isMounted) {
+          setProducts(data);
+          setError('');
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err.message || 'Не удалось загрузить товары');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <div className="home-wrapper">
       <div className="home-hero">
@@ -10,7 +44,13 @@ function HomePage() {
         <p>Откройте для себя нашу коллекцию премиум-товаров</p>
       </div>
 
-      <ProductGrid products={courses} title="Наш каталог" />
+      {loading ? (
+        <p>Загрузка товаров...</p>
+      ) : error ? (
+        <p>Ошибка: {error}</p>
+      ) : (
+        <ProductGrid products={products} title="Наш каталог" />
+      )}
     </div>
   );
 }

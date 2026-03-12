@@ -39,6 +39,12 @@
   font-weight: 600;
 }
 
+.category-menu-status {
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
 @media (max-width: 768px) {
   .category-menu-wrapper {
     gap: 15px;
@@ -48,6 +54,10 @@
   .category-link {
     font-size: 12px;
     padding: 6px 10px;
+  }
+
+  .category-menu-status {
+    font-size: 12px;
   }
 }
 
@@ -60,5 +70,9 @@
   .category-link {
     font-size: 11px;
     padding: 5px 8px;
+  }
+
+  .category-menu-status {
+    font-size: 11px;
   }
 }
