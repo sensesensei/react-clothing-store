@@ -4,9 +4,9 @@ import {
   formatPrice,
   getProductHighlights,
   getProductOldPrice,
-  normalizeSizes,
 } from '../../features/products/lib/productUtils';
 import { getProductBySlug } from '../../services/api/productsApi';
+import { Button, ErrorState, Loader, Price } from '../../shared/ui';
 import './ProductPage.css';
 
 function ProductPage() {
@@ -60,29 +60,27 @@ function ProductPage() {
       return;
     }
 
-    const availableSizes = normalizeSizes(product.sizes);
-
-    setSelectedSize(availableSizes[0] || '');
-    setActiveImage(product.image_url || '');
+    setSelectedSize(product.sizes[0] || '');
+    setActiveImage(product.imageUrl || '');
   }, [product]);
 
   if (loading) {
-    return <p>Загрузка товара...</p>;
+    return <Loader label="Загрузка товара..." />;
   }
 
   if (error) {
-    return <p>Ошибка: {error}</p>;
+    return <ErrorState message={error} />;
   }
 
   if (!product) {
     return null;
   }
 
-  const galleryImages = product.image_url ? [product.image_url] : [];
-  const currentImage = activeImage || product.image_url;
+  const galleryImages = product.imageUrl ? [product.imageUrl] : [];
+  const currentImage = activeImage || product.imageUrl;
   const currentPrice = formatPrice(product.price);
   const oldPrice = getProductOldPrice(product);
-  const productSizes = normalizeSizes(product.sizes);
+  const productSizes = product.sizes;
   const highlights = getProductHighlights(product);
 
   return (
@@ -122,14 +120,13 @@ function ProductPage() {
           <div className="product-summary-head">
             <h1 className="product-heading">{product.title}</h1>
 
-            <div className="product-pricing">
-              {currentPrice ? (
-                <span className="product-current-price">{currentPrice}</span>
-              ) : null}
-              {oldPrice ? (
-                <span className="product-old-price">{oldPrice}</span>
-              ) : null}
-            </div>
+            <Price
+              className="product-pricing"
+              current={currentPrice}
+              currentClassName="product-current-price"
+              oldPrice={oldPrice}
+              oldPriceClassName="product-old-price"
+            />
           </div>
 
           {productSizes.length > 0 ? (
@@ -151,9 +148,14 @@ function ProductPage() {
             </div>
           ) : null}
 
-          <button type="button" className="product-buy-button">
+          <Button
+            type="button"
+            variant="pill-dark"
+            size="xs"
+            className="product-buy-button"
+          >
             купить
-          </button>
+          </Button>
 
           {highlights.length > 0 ? (
             <ul className="product-highlights">

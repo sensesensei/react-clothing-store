@@ -1,0 +1,51 @@
+.ui-state {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.ui-state--compact {
+  max-width: none;
+  padding: 20px 0;
+}
+
+.ui-state__spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(17, 17, 17, 0.14);
+  border-top-color: #111111;
+  border-radius: 999px;
+  animation: ui-state-spin 0.8s linear infinite;
+}
+
+.ui-state__title {
+  margin: 0;
+  color: #151515;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ui-state__message {
+  margin: 0;
+  max-width: 560px;
+  color: #666666;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ui-state--error .ui-state__title {
+  color: #8f2323;
+}
+
+@keyframes ui-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

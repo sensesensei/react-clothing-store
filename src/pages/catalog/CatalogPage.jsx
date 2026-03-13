@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { getProducts } from '../../services/api/productsApi';
 import ProductGrid from '../../features/products/components/ProductGrid';
+import { ErrorState, Loader } from '../../shared/ui';
 import './CatalogPage.css';
 
 const SORT_KEYS = ['title', 'slug', 'id'];
@@ -94,8 +95,8 @@ function CatalogPage() {
     const categoryValue = String(category).toLowerCase();
 
     return sortedProducts.filter((product) => {
-      const categorySlug = product.categories?.slug?.toLowerCase();
-      const categoryName = product.categories?.name?.toLowerCase();
+      const categorySlug = product.category?.slug?.toLowerCase();
+      const categoryName = product.category?.name?.toLowerCase();
 
       return categorySlug === categoryValue || categoryName === categoryValue;
     });
@@ -108,13 +109,13 @@ function CatalogPage() {
 
     const categoryValue = String(category).toLowerCase();
     const matchedProduct = products.find((product) => {
-      const categorySlug = product.categories?.slug?.toLowerCase();
-      const categoryName = product.categories?.name?.toLowerCase();
+      const categorySlug = product.category?.slug?.toLowerCase();
+      const categoryName = product.category?.name?.toLowerCase();
 
       return categorySlug === categoryValue || categoryName === categoryValue;
     });
 
-    return matchedProduct?.categories?.name || String(category);
+    return matchedProduct?.category?.name || String(category);
   }, [products, category]);
 
   const filteredProducts = useMemo(() => {
@@ -129,11 +130,11 @@ function CatalogPage() {
   }, [categoryProducts, searchQuery]);
 
   if (loading) {
-    return <p>Загрузка товаров...</p>;
+    return <Loader label="Загрузка товаров..." />;
   }
 
   if (error) {
-    return <p>Ошибка: {error}</p>;
+    return <ErrorState message={error} />;
   }
 
   return (

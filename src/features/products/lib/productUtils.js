@@ -16,7 +16,7 @@ export function formatPrice(value) {
 
 export function getProductOldPrice(product) {
   const currentPrice = Number(product?.price);
-  const previousPrice = Number(product?.old_price);
+  const previousPrice = Number(product?.oldPrice);
 
   if (!Number.isFinite(previousPrice) || previousPrice <= currentPrice) {
     return null;
@@ -56,8 +56,8 @@ export function getProductHighlights(product) {
 
   const fallbackItems = [];
 
-  if (product.categories?.name) {
-    fallbackItems.push(`Категория: ${product.categories.name}`);
+  if (product.category?.name) {
+    fallbackItems.push(`Категория: ${product.category.name}`);
   }
 
   if (product.stock !== null && product.stock !== undefined) {

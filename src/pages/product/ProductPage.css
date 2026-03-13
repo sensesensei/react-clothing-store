@@ -69,8 +69,7 @@
 }
 
 .product-thumbnail,
-.product-size-option,
-.product-buy-button {
+.product-size-option {
   margin: 0;
   padding: 0;
   font: inherit;
@@ -189,21 +188,7 @@
 }
 
 .product-buy-button {
-  display: inline-grid;
-  place-items: center;
-  min-width: 74px;
-  height: 30px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 999px;
-  background: #060606;
-  color: #ffffff;
   box-shadow: none;
-  font-size: 0.72rem;
-  font-weight: 800;
-  line-height: 1;
-  text-align: center;
-  text-transform: lowercase;
 }
 
 .product-highlights {

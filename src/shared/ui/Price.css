@@ -1,0 +1,17 @@
+.ui-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ui-price__current {
+  color: #141414;
+  line-height: 1;
+}
+
+.ui-price__old {
+  color: #b2b2b2;
+  line-height: 1;
+  text-decoration: line-through;
+}

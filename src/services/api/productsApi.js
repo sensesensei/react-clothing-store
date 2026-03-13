@@ -17,15 +17,62 @@ const PRODUCTS_SELECT = `
 
 const CATEGORIES_SELECT = 'id, name, slug';
 
+function normalizeCategory(category) {
+  if (!category) {
+    return null;
+  }
+
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+  };
+}
+
+function normalizeSizes(sizes) {
+  if (Array.isArray(sizes)) {
+    return sizes
+      .map((size) => String(size).trim())
+      .filter(Boolean);
+  }
+
+  if (typeof sizes === 'string') {
+    return sizes
+      .split(',')
+      .map((size) => size.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function normalizeProduct(product, category) {
+  const normalizedCategory = normalizeCategory(category);
+
+  return {
+    id: product.id,
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    price: product.price,
+    oldPrice: product.old_price,
+    imageUrl: product.image_url,
+    sizes: normalizeSizes(product.sizes),
+    categoryId: product.category_id,
+    category: normalizedCategory,
+    stock: product.stock,
+    isActive: Boolean(product.is_active),
+    createdAt: product.created_at,
+  };
+}
+
 function mergeProductsWithCategories(products, categories) {
   const categoriesMap = new Map(
-    categories.map((category) => [category.id, category]),
+    categories.map((category) => [category.id, normalizeCategory(category)]),
   );
 
-  return products.map((product) => ({
-    ...product,
-    categories: categoriesMap.get(product.category_id) || null,
-  }));
+  return products.map((product) =>
+    normalizeProduct(product, categoriesMap.get(product.category_id) || null));
 }
 
 async function getCategoriesByIds(categoryIds) {
@@ -55,7 +102,7 @@ export async function getCategories() {
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  return (data ?? []).map(normalizeCategory);
 }
 
 export async function getProducts() {

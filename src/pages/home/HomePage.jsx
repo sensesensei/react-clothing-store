@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductGrid from '../../features/products/components/ProductGrid';
 import { getProducts } from '../../services/api/productsApi';
+import { ErrorState, Loader } from '../../shared/ui';
 import './HomePage.css';
 
 function HomePage() {
@@ -45,9 +46,9 @@ function HomePage() {
       </div>
 
       {loading ? (
-        <p>Загрузка товаров...</p>
+        <Loader label="Загрузка товаров..." />
       ) : error ? (
-        <p>Ошибка: {error}</p>
+        <ErrorState message={error} />
       ) : (
         <ProductGrid products={products} title="Наш каталог" />
       )}

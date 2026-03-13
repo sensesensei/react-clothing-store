@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { formatPrice, getProductOldPrice } from '../lib/productUtils';
+import { Button, EmptyState, Price } from '../../../shared/ui';
 import './ProductGrid.css';
 
 function ProductGrid({ products = [], title = 'Товары' }) {
@@ -8,7 +9,11 @@ function ProductGrid({ products = [], title = 'Товары' }) {
       {title ? <h2>{title}</h2> : null}
 
       {products.length === 0 ? (
-        <p>Товары не найдены</p>
+        <EmptyState
+          compact
+          className="product-grid-empty"
+          title="Товары не найдены"
+        />
       ) : (
         <div className="products-grid">
           {products.map((product) => {
@@ -20,7 +25,7 @@ function ProductGrid({ products = [], title = 'Товары' }) {
               <article key={product.id} className="product-card">
                 <Link to={productLink} className="product-image-link">
                   <img
-                    src={product.image_url}
+                    src={product.imageUrl}
                     alt={product.title}
                     className="product-image"
                   />
@@ -31,16 +36,22 @@ function ProductGrid({ products = [], title = 'Товары' }) {
                     <h3 className="product-title">{product.title}</h3>
                   </Link>
 
-                  <div className="product-price-group">
-                    {price ? <span className="product-price">{price}</span> : null}
-                    {oldPrice ? (
-                      <span className="product-old-price">{oldPrice}</span>
-                    ) : null}
-                  </div>
+                  <Price
+                    className="product-price-group"
+                    current={price}
+                    currentClassName="product-price"
+                    oldPrice={oldPrice}
+                    oldPriceClassName="product-old-price"
+                  />
 
-                  <Link to={productLink} className="product-action">
+                  <Button
+                    to={productLink}
+                    variant="pill-dark"
+                    size="sm"
+                    className="product-action"
+                  >
                     купить
-                  </Link>
+                  </Button>
                 </div>
               </article>
             );
