@@ -1,3 +1,5 @@
+import { normalizeProductSizes } from '../model';
+
 const priceFormatter = new Intl.NumberFormat('ru-RU');
 
 export function formatPrice(value) {
@@ -26,20 +28,7 @@ export function getProductOldPrice(product) {
 }
 
 export function normalizeSizes(sizes) {
-  if (Array.isArray(sizes)) {
-    return sizes
-      .map((size) => String(size).trim())
-      .filter(Boolean);
-  }
-
-  if (typeof sizes === 'string') {
-    return sizes
-      .split(',')
-      .map((size) => size.trim())
-      .filter(Boolean);
-  }
-
-  return [];
+  return normalizeProductSizes(sizes);
 }
 
 export function getProductHighlights(product) {

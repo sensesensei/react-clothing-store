@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import ProductGrid from '../../features/products/components/ProductGrid';
-import { getProducts } from '../../services/api/productsApi';
-import { ErrorState, Loader } from '../../shared/ui';
+import { getProducts } from '../../features/products/api';
+import { ProductGrid } from '../../features/products/ui';
+import { EmptyState, ErrorState, Loader } from '../../shared/ui';
 import './HomePage.css';
 
 function HomePage() {
@@ -49,6 +49,11 @@ function HomePage() {
         <Loader label="Загрузка товаров..." />
       ) : error ? (
         <ErrorState message={error} />
+      ) : products.length === 0 ? (
+        <EmptyState
+          title="Каталог пока пуст"
+          message="Товары появятся здесь, как только мы добавим их в витрину."
+        />
       ) : (
         <ProductGrid products={products} title="Наш каталог" />
       )}

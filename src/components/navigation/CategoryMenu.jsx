@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { getCategories } from '../../services/api/productsApi';
+import { getCategories } from '../../features/products/api';
 import './CategoryMenu.css';
 
 function CategoryMenu() {

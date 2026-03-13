@@ -40,6 +40,12 @@
   line-height: 1.6;
 }
 
+.ui-state__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
 .ui-state--error .ui-state__title {
   color: #8f2323;
 }

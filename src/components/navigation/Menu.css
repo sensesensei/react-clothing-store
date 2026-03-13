@@ -49,6 +49,14 @@
   border-radius: 50%;
 }
 
+.account-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  color: currentColor;
+}
+
 .account-btn:hover {
   color: #c4a747;
   background-color: rgba(196, 167, 71, 0.1);

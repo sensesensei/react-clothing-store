@@ -65,8 +65,13 @@ function Menu() {
             startCloseTimer();
           }}
         >
-          <button className="account-btn" onClick={toggleDropdown}>
-            <RiAccountCircleLine size={24} />
+          <button
+            type="button"
+            className="account-btn"
+            onClick={toggleDropdown}
+            aria-label="Открыть меню аккаунта"
+          >
+            <RiAccountCircleLine size={24} className="account-icon" />
           </button>
 
           {isDropdownOpen && (

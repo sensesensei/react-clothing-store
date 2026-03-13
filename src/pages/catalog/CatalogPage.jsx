@@ -1,12 +1,20 @@
 import queryString from 'query-string';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { getProducts } from '../../services/api/productsApi';
-import ProductGrid from '../../features/products/components/ProductGrid';
-import { ErrorState, Loader } from '../../shared/ui';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getProducts } from '../../features/products/api';
+import { ProductGrid } from '../../features/products/ui';
+import { EmptyState, ErrorState, Loader } from '../../shared/ui';
 import './CatalogPage.css';
 
 const SORT_KEYS = ['title', 'slug', 'id'];
+
+function getQueryValue(value) {
+  if (Array.isArray(value)) {
+    return value[0] || '';
+  }
+
+  return typeof value === 'string' ? value : '';
+}
 
 function sortProducts(products, key) {
   const sortedProducts = [...products];
@@ -33,6 +41,44 @@ function sortProducts(products, key) {
   return sortedProducts;
 }
 
+function getCatalogEmptyState({ category, categoryLabel, hasProducts, searchQuery }) {
+  const normalizedSearchQuery = searchQuery.trim();
+  const currentCategoryLabel = categoryLabel || String(category || '');
+
+  if (!hasProducts) {
+    return {
+      title: 'Каталог пока пуст',
+      message: 'Товары появятся здесь, когда будут добавлены в базу.',
+    };
+  }
+
+  if (normalizedSearchQuery && currentCategoryLabel) {
+    return {
+      title: 'Ничего не найдено',
+      message: `По запросу "${normalizedSearchQuery}" в категории "${currentCategoryLabel}" товаров пока нет.`,
+    };
+  }
+
+  if (normalizedSearchQuery) {
+    return {
+      title: 'Ничего не найдено',
+      message: `По запросу "${normalizedSearchQuery}" мы не нашли ни одного товара.`,
+    };
+  }
+
+  if (currentCategoryLabel) {
+    return {
+      title: 'В этой категории пока нет товаров',
+      message: `Категория "${currentCategoryLabel}" пока пуста.`,
+    };
+  }
+
+  return {
+    title: 'Ничего не найдено',
+    message: 'Попробуй изменить параметры поиска или фильтры.',
+  };
+}
+
 function CatalogPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,8 +89,8 @@ function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const sortKey = query.sort;
-  const category = query.category;
+  const sortKey = getQueryValue(query.sort);
+  const category = getQueryValue(query.category);
 
   useEffect(() => {
     if (sortKey && !SORT_KEYS.includes(sortKey)) {
@@ -92,7 +138,7 @@ function CatalogPage() {
       return sortedProducts;
     }
 
-    const categoryValue = String(category).toLowerCase();
+    const categoryValue = category.toLowerCase();
 
     return sortedProducts.filter((product) => {
       const categorySlug = product.category?.slug?.toLowerCase();
@@ -107,7 +153,7 @@ function CatalogPage() {
       return '';
     }
 
-    const categoryValue = String(category).toLowerCase();
+    const categoryValue = category.toLowerCase();
     const matchedProduct = products.find((product) => {
       const categorySlug = product.category?.slug?.toLowerCase();
       const categoryName = product.category?.name?.toLowerCase();
@@ -115,11 +161,15 @@ function CatalogPage() {
       return categorySlug === categoryValue || categoryName === categoryValue;
     });
 
-    return matchedProduct?.category?.name || String(category);
+    return matchedProduct?.category?.name || category;
   }, [products, category]);
 
   const filteredProducts = useMemo(() => {
-    const searchLower = searchQuery.toLowerCase();
+    const searchLower = searchQuery.trim().toLowerCase();
+
+    if (!searchLower) {
+      return categoryProducts;
+    }
 
     return categoryProducts.filter((product) => {
       const title = product.title?.toLowerCase() || '';
@@ -128,6 +178,19 @@ function CatalogPage() {
       return title.includes(searchLower) || slug.includes(searchLower);
     });
   }, [categoryProducts, searchQuery]);
+
+  const emptyState = useMemo(() => {
+    if (filteredProducts.length > 0) {
+      return null;
+    }
+
+    return getCatalogEmptyState({
+      category,
+      categoryLabel,
+      hasProducts: products.length > 0,
+      searchQuery,
+    });
+  }, [category, categoryLabel, filteredProducts.length, products.length, searchQuery]);
 
   if (loading) {
     return <Loader label="Загрузка товаров..." />;
@@ -144,7 +207,7 @@ function CatalogPage() {
           type="text"
           placeholder="Поиск по названию или артикулу..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(event) => setSearchQuery(event.target.value)}
           className="search-input"
         />
 
@@ -161,16 +224,20 @@ function CatalogPage() {
         ) : null}
       </div>
 
-      <ProductGrid
-        products={filteredProducts}
-        title={
-          category
-            ? categoryLabel
-            : sortKey
-              ? `Сортировка по ${sortKey}`
-              : 'Каталог'
-        }
-      />
+      {emptyState ? (
+        <EmptyState title={emptyState.title} message={emptyState.message} />
+      ) : (
+        <ProductGrid
+          products={filteredProducts}
+          title={
+            category
+              ? categoryLabel
+              : sortKey
+                ? `Сортировка по ${sortKey}`
+                : 'Каталог'
+          }
+        />
+      )}
     </div>
   );
 }

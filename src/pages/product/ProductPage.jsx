@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import {
   formatPrice,
   getProductHighlights,
   getProductOldPrice,
 } from '../../features/products/lib/productUtils';
-import { getProductBySlug } from '../../services/api/productsApi';
-import { Button, ErrorState, Loader, Price } from '../../shared/ui';
+import { getProductBySlug } from '../../features/products/api';
+import { Button, ErrorState, Loader, NotFoundState, Price } from '../../shared/ui';
 import './ProductPage.css';
 
 function ProductPage() {
   const { slug } = useParams();
-  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [activeImage, setActiveImage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -26,17 +26,21 @@ function ProductPage() {
       try {
         setLoading(true);
         setError('');
+        setNotFound(false);
+        setProduct(null);
 
         const data = await getProductBySlug(slug);
 
-        if (!data) {
-          navigate('/catalog', { replace: true });
+        if (!isMounted) {
           return;
         }
 
-        if (isMounted) {
-          setProduct(data);
+        if (!data) {
+          setNotFound(true);
+          return;
         }
+
+        setProduct(data);
       } catch (err) {
         if (isMounted) {
           setError(err.message || 'Не удалось загрузить товар');
@@ -53,7 +57,7 @@ function ProductPage() {
     return () => {
       isMounted = false;
     };
-  }, [slug, navigate]);
+  }, [slug]);
 
   useEffect(() => {
     if (!product) {
@@ -70,6 +74,16 @@ function ProductPage() {
 
   if (error) {
     return <ErrorState message={error} />;
+  }
+
+  if (notFound) {
+    return (
+      <NotFoundState
+        title="Товар не найден"
+        message="Возможно, он был удален, временно скрыт или ссылка уже неактуальна."
+        actionLabel="В каталог"
+      />
+    );
   }
 
   if (!product) {
