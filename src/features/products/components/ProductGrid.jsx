@@ -1,6 +1,22 @@
 import { Link } from 'react-router-dom';
 import './ProductGrid.css';
 
+const priceFormatter = new Intl.NumberFormat('ru-RU');
+
+function formatPrice(value) {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const numericValue = Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    return null;
+  }
+
+  return `${priceFormatter.format(numericValue)} ₽`;
+}
+
 function ProductGrid({ products = [], title = 'Товары' }) {
   return (
     <section className="product-grid-section">
@@ -10,23 +26,44 @@ function ProductGrid({ products = [], title = 'Товары' }) {
         <p>Товары не найдены</p>
       ) : (
         <div className="products-grid">
-          {products.map((product) => (
-            <article key={product.id} className="product-card">
-              <Link to={`/catalog/${product.slug}`} className="product-link">
-                <img
-                  src={product.image_url}
-                  alt={product.title}
-                  className="product-image"
-                />
-                <h3>{product.title}</h3>
-              </Link>
+          {products.map((product) => {
+            const productLink = `/catalog/${product.slug}`;
+            const currentPrice = Number(product.price);
+            const previousPrice = Number(product.old_price);
+            const price = formatPrice(product.price);
+            const oldPrice = Number.isFinite(previousPrice) && previousPrice > currentPrice
+              ? formatPrice(product.old_price)
+              : null;
 
-              <p>{product.categories?.name || 'Без категории'}</p>
-              <p>{product.price} ₽</p>
+            return (
+              <article key={product.id} className="product-card">
+                <Link to={productLink} className="product-image-link">
+                  <img
+                    src={product.image_url}
+                    alt={product.title}
+                    className="product-image"
+                  />
+                </Link>
 
-              {product.old_price ? <p>{product.old_price} ₽</p> : null}
-            </article>
-          ))}
+                <div className="product-card-body">
+                  <Link to={productLink} className="product-title-link">
+                    <h3 className="product-title">{product.title}</h3>
+                  </Link>
+
+                  <div className="product-price-group">
+                    {price ? <span className="product-price">{price}</span> : null}
+                    {oldPrice ? (
+                      <span className="product-old-price">{oldPrice}</span>
+                    ) : null}
+                  </div>
+
+                  <Link to={productLink} className="product-action">
+                    купить
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>

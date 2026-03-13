@@ -1,0 +1,300 @@
+.product-page {
+  box-sizing: border-box;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 18px 40px 88px;
+  color: #131313;
+  background: transparent;
+}
+
+.product-page a {
+  font-size: inherit;
+}
+
+.product-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #444444;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.product-detail-layout {
+  display: grid;
+  grid-template-columns: fit-content(760px) minmax(320px, 380px);
+  justify-content: center;
+  gap: 56px;
+  align-items: start;
+}
+
+.product-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  gap: 14px;
+}
+
+.product-main-media {
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.product-main-image {
+  display: block;
+  width: auto;
+  max-width: min(100%, 760px);
+  height: auto;
+  max-height: 680px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.product-thumbnails {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.product-thumbnail,
+.product-size-option,
+.product-buy-button {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.product-thumbnail {
+  width: 54px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  border-radius: 0;
+}
+
+.product-thumbnail.is-active {
+  border-color: #111111;
+}
+
+.product-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-summary {
+  position: sticky;
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  max-width: 380px;
+  padding-top: 42px;
+}
+
+.product-summary-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.product-heading {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  width: 100%;
+  max-width: none;
+  font-size: clamp(1.75rem, 2.05vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.product-pricing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.product-current-price {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.product-summary .product-old-price {
+  color: #b2b2b2;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.22rem;
+  text-decoration: line-through;
+}
+
+.product-size-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-size-label {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.product-size-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.product-size-option {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d8d8d8;
+  background: transparent;
+  color: #171717;
+  border-radius: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.95rem;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.product-size-option.is-active {
+  border-color: #111111;
+  background: #111111;
+  color: #ffffff;
+}
+
+.product-buy-button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 74px;
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #060606;
+  color: #ffffff;
+  box-shadow: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.product-highlights {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.product-shipping-note {
+  margin: 8px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 1180px) {
+  .product-detail-layout {
+    grid-template-columns: minmax(0, 1.18fr) minmax(280px, 320px);
+    gap: 20px;
+  }
+
+  .product-heading {
+    white-space: normal;
+  }
+
+  .product-main-media {
+    min-height: 600px;
+  }
+
+  .product-main-image {
+    max-height: 600px;
+  }
+}
+
+@media (max-width: 960px) {
+  .product-page {
+    padding: 24px 20px 60px;
+  }
+
+  .product-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .product-summary {
+    position: static;
+    padding-top: 0;
+    max-width: none;
+  }
+
+  .product-main-media {
+    min-height: 460px;
+  }
+
+  .product-thumbnails {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-page {
+    padding: 20px 16px 48px;
+  }
+
+  .product-back-link {
+    margin-bottom: 20px;
+  }
+
+  .product-main-media {
+    min-height: 360px;
+  }
+
+  .product-main-image {
+    max-height: 340px;
+  }
+
+  .product-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+
+  .product-heading {
+    font-size: 1.9rem;
+  }
+
+  .product-current-price {
+    font-size: 1.7rem;
+  }
+}

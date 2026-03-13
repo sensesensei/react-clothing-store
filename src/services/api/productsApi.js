@@ -8,6 +8,7 @@ const PRODUCTS_SELECT = `
   price,
   old_price,
   image_url,
+  sizes,
   category_id,
   stock,
   is_active,
