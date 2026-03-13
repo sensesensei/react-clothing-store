@@ -1,21 +1,6 @@
 import { Link } from 'react-router-dom';
+import { formatPrice, getProductOldPrice } from '../lib/productUtils';
 import './ProductGrid.css';
-
-const priceFormatter = new Intl.NumberFormat('ru-RU');
-
-function formatPrice(value) {
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
-  const numericValue = Number(value);
-
-  if (!Number.isFinite(numericValue)) {
-    return null;
-  }
-
-  return `${priceFormatter.format(numericValue)} ₽`;
-}
 
 function ProductGrid({ products = [], title = 'Товары' }) {
   return (
@@ -28,12 +13,8 @@ function ProductGrid({ products = [], title = 'Товары' }) {
         <div className="products-grid">
           {products.map((product) => {
             const productLink = `/catalog/${product.slug}`;
-            const currentPrice = Number(product.price);
-            const previousPrice = Number(product.old_price);
             const price = formatPrice(product.price);
-            const oldPrice = Number.isFinite(previousPrice) && previousPrice > currentPrice
-              ? formatPrice(product.old_price)
-              : null;
+            const oldPrice = getProductOldPrice(product);
 
             return (
               <article key={product.id} className="product-card">

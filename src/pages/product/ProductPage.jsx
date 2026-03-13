@@ -1,65 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  formatPrice,
+  getProductHighlights,
+  getProductOldPrice,
+  normalizeSizes,
+} from '../../features/products/lib/productUtils';
 import { getProductBySlug } from '../../services/api/productsApi';
 import './ProductPage.css';
-
-const priceFormatter = new Intl.NumberFormat('ru-RU');
-
-function formatPrice(value) {
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
-  const numericValue = Number(value);
-
-  if (!Number.isFinite(numericValue)) {
-    return null;
-  }
-
-  return `${priceFormatter.format(numericValue)} ₽`;
-}
-
-function getProductHighlights(product) {
-  const descriptionItems = product.description
-    ? product.description
-      .split(/\r?\n|[.;]/)
-      .map((item) => item.trim())
-      .filter(Boolean)
-    : [];
-
-  if (descriptionItems.length > 0) {
-    return descriptionItems.slice(0, 4);
-  }
-
-  const fallbackItems = [];
-
-  if (product.categories?.name) {
-    fallbackItems.push(`Категория: ${product.categories.name}`);
-  }
-
-  if (product.stock !== null && product.stock !== undefined) {
-    fallbackItems.push(Number(product.stock) > 0 ? 'В наличии' : 'Под заказ');
-  }
-
-  return fallbackItems;
-}
-
-function normalizeSizes(sizes) {
-  if (Array.isArray(sizes)) {
-    return sizes
-      .map((size) => String(size).trim())
-      .filter(Boolean);
-  }
-
-  if (typeof sizes === 'string') {
-    return sizes
-      .split(',')
-      .map((size) => size.trim())
-      .filter(Boolean);
-  }
-
-  return [];
-}
 
 function ProductPage() {
   const { slug } = useParams();
@@ -133,9 +81,7 @@ function ProductPage() {
   const galleryImages = product.image_url ? [product.image_url] : [];
   const currentImage = activeImage || product.image_url;
   const currentPrice = formatPrice(product.price);
-  const oldPrice = Number(product.old_price) > Number(product.price)
-    ? formatPrice(product.old_price)
-    : null;
+  const oldPrice = getProductOldPrice(product);
   const productSizes = normalizeSizes(product.sizes);
   const highlights = getProductHighlights(product);
 

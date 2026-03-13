@@ -1,64 +1,45 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  background-color: #ffffff;
 }
 
-.active {
-  color: rgb(33, 36, 32);
+.page-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 72px 24px;
+}
+
+.page-shell__title {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: #151515;
+}
+
+.page-shell__text {
+  max-width: 640px;
+  margin-top: 14px;
+  color: #666666;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.page-shell__link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 22px;
+  color: #151515;
   text-decoration: none;
+  font-weight: 600;
 }
 
-.courseLink {
-  font-size: 25px;
-  text-decoration: none;
-}
-
-.courseLink:hover {
+.page-shell__link:hover {
   text-decoration: underline;
 }
 
-a {
-  color: rgb(0, 0, 0);
-  font-size: 35px;
-}
-
-h1 {
-  font-size: 150px;
-  margin-top: 35px;
-}
-
-nav {
-  background-color: rgb(0, 0, 0);
-  padding: 0;
-}
-
-nav a {
-  margin: 0;
-}
-
-/* Special styling for menu component */
-nav.menu {
-  padding: 1px 20px 20px;
-  background-color: rgb(0, 0, 0);
-}
-
-button {
-  padding: 15px;
-  font-size: 20px;
-  border-radius: 5px;
-  border: 0;
-  margin: 20px;
-  cursor: pointer;
-}
-
-form {
-  font-size: 30px;
-}
-input {
-  font-size: 20px;
-  margin: 15px;
-  padding: 10px;
-}
-
-label {
-  display: block;
+@media (max-width: 768px) {
+  .page-shell {
+    padding: 56px 16px;
+  }
 }
