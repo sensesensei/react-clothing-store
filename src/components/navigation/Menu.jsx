@@ -1,27 +1,34 @@
+import { useEffect, useRef, useState } from 'react';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
+import { CartQuantityBadge, useCart } from '../../features/cart';
 import './Menu.css';
 
 function Menu() {
+  const { totalItems } = useCart();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const timerRef = useRef(null);
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen((currentValue) => !currentValue);
   };
 
   const startCloseTimer = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     timerRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 1000);
   };
 
   const resetTimer = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
   };
 
   useEffect(() => {
@@ -74,7 +81,7 @@ function Menu() {
             <RiAccountCircleLine size={24} className="account-icon" />
           </button>
 
-          {isDropdownOpen && (
+          {isDropdownOpen ? (
             <div className="dropdown-menu">
               <NavLink to="/login" className="dropdown-item">
                 Войти
@@ -83,13 +90,16 @@ function Menu() {
                 Зарегистрироваться
               </NavLink>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
       <div className="menu-links">
         <NavLink to="/catalog">каталог</NavLink>
-        <NavLink to="/cart">корзина</NavLink>
+        <NavLink to="/cart" className="menu-cart-link">
+          корзина
+          <CartQuantityBadge count={totalItems} />
+        </NavLink>
         <NavLink to="/about">инфо</NavLink>
         <NavLink to="/contact">контакты</NavLink>
       </div>

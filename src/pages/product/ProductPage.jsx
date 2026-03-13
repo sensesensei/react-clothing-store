@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useCart } from '../../features/cart';
+import { getProductBySlug } from '../../features/products/api';
 import {
   formatPrice,
   getProductHighlights,
   getProductOldPrice,
 } from '../../features/products/lib/productUtils';
-import { getProductBySlug } from '../../features/products/api';
-import { Button, ErrorState, Loader, NotFoundState, Price } from '../../shared/ui';
+import {
+  Button,
+  ErrorState,
+  Loader,
+  NotFoundState,
+  Price,
+} from '../../shared/ui';
 import './ProductPage.css';
 
 function ProductPage() {
   const { slug } = useParams();
+  const { addItem } = useCart();
 
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [activeImage, setActiveImage] = useState('');
+  const [cartFeedback, setCartFeedback] = useState({ type: '', text: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notFound, setNotFound] = useState(false);
@@ -28,6 +37,7 @@ function ProductPage() {
         setError('');
         setNotFound(false);
         setProduct(null);
+        setCartFeedback({ type: '', text: '' });
 
         const data = await getProductBySlug(slug);
 
@@ -67,6 +77,36 @@ function ProductPage() {
     setSelectedSize(product.sizes[0] || '');
     setActiveImage(product.imageUrl || '');
   }, [product]);
+
+  useEffect(() => {
+    setCartFeedback({ type: '', text: '' });
+  }, [selectedSize]);
+
+  function handleAddToCart() {
+    if (!product) {
+      return;
+    }
+
+    try {
+      const result = addItem(product, {
+        quantity: 1,
+        size: selectedSize,
+      });
+
+      setCartFeedback({
+        type: 'success',
+        text:
+          result.mode === 'updated'
+            ? 'Количество этого товара в корзине увеличено.'
+            : 'Товар добавлен в корзину.',
+      });
+    } catch (err) {
+      setCartFeedback({
+        type: 'error',
+        text: err.message || 'Не удалось добавить товар в корзину.',
+      });
+    }
+  }
 
   if (loading) {
     return <Loader label="Загрузка товара..." />;
@@ -162,14 +202,23 @@ function ProductPage() {
             </div>
           ) : null}
 
-          <Button
-            type="button"
-            variant="pill-dark"
-            size="xs"
-            className="product-buy-button"
-          >
-            купить
-          </Button>
+          <div className="product-cart-actions">
+            <Button
+              type="button"
+              variant="pill-dark"
+              size="xs"
+              className="product-buy-button"
+              onClick={handleAddToCart}
+            >
+              купить
+            </Button>
+
+            {cartFeedback.text ? (
+              <p className={`product-cart-feedback is-${cartFeedback.type}`}>
+                {cartFeedback.text}
+              </p>
+            ) : null}
+          </div>
 
           {highlights.length > 0 ? (
             <ul className="product-highlights">

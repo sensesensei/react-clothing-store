@@ -1,0 +1,14 @@
+.cart-quantity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #c4a747;
+  color: #060606;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}

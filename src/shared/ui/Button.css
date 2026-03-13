@@ -13,6 +13,12 @@
     box-shadow 0.2s ease;
 }
 
+.ui-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .ui-button--full-width {
   width: 100%;
 }

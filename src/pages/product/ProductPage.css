@@ -191,6 +191,27 @@
   box-shadow: none;
 }
 
+.product-cart-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product-cart-feedback {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.product-cart-feedback.is-success {
+  color: #2c7a4b;
+}
+
+.product-cart-feedback.is-error {
+  color: #a13a3a;
+}
+
 .product-highlights {
   margin: 0;
   padding-left: 18px;
