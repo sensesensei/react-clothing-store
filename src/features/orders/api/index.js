@@ -1,1 +1,1 @@
-export { createOrder } from './ordersApi';
+export { createOrder, getAdminOrders, updateOrderStatus } from './ordersApi';

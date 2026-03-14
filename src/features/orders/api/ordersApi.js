@@ -1,5 +1,8 @@
 import { supabase } from '../../../services/supabase/client';
 import {
+  normalizeOrderModel,
+  normalizeOrderStatus,
+  ORDER_DB_SELECT,
   serializeOrderForWrite,
   serializeOrderItemsForWrite,
   validateOrderForm,
@@ -48,4 +51,33 @@ export async function createOrder(values, items) {
   }
 
   return order;
+}
+
+export async function getAdminOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select(ORDER_DB_SELECT)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []).map((order) => normalizeOrderModel(order));
+}
+
+export async function updateOrderStatus(orderId, status) {
+  const nextStatus = normalizeOrderStatus(status);
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ status: nextStatus })
+    .eq('id', orderId)
+    .select(ORDER_DB_SELECT)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return normalizeOrderModel(data);
 }

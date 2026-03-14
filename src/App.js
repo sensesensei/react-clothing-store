@@ -11,6 +11,10 @@ import CheckoutSuccessPage from './pages/checkout-success/CheckoutSuccessPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import NotFoundPage from './pages/not-found/NotFoundPage';
+import AdminLayout from './layouts/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import { CartProvider } from './features/cart';
 import './App.css';
 
@@ -20,6 +24,12 @@ function App() {
       <CartProvider>
         <div className="App">
           <Routes>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="products" element={<AdminProductsPage />} />
+              <Route path="orders" element={<AdminOrdersPage />} />
+            </Route>
+
             <Route path="/" element={<MainLayout />}>
               <Route index element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />

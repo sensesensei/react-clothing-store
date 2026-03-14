@@ -83,6 +83,9 @@ function Menu() {
 
           {isDropdownOpen ? (
             <div className="dropdown-menu">
+              <NavLink to="/admin" className="dropdown-item">
+                Админка
+              </NavLink>
               <NavLink to="/login" className="dropdown-item">
                 Войти
               </NavLink>
