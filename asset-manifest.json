@@ -1,13 +1,15 @@
 {
   "files": {
     "main.css": "/react-clothing-store/static/css/main.02d67831.css",
-    "main.js": "/react-clothing-store/static/js/main.2668805e.js",
+    "main.js": "/react-clothing-store/static/js/main.9a2af51a.js",
+    "static/media/home-hero-banner.png": "/react-clothing-store/static/media/home-hero-banner.b9486c868c6fe79b5460.png",
+    "static/media/navbar-logo.png": "/react-clothing-store/static/media/navbar-logo.6431c27dcfc7d9dd13b3.png",
     "index.html": "/react-clothing-store/index.html",
     "main.02d67831.css.map": "/react-clothing-store/static/css/main.02d67831.css.map",
-    "main.2668805e.js.map": "/react-clothing-store/static/js/main.2668805e.js.map"
+    "main.9a2af51a.js.map": "/react-clothing-store/static/js/main.9a2af51a.js.map"
   },
   "entrypoints": [
     "static/css/main.02d67831.css",
-    "static/js/main.2668805e.js"
+    "static/js/main.9a2af51a.js"
   ]
 }
