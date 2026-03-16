@@ -269,12 +269,6 @@
   font-weight: 700;
 }
 
-.admin-product-slug-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-}
-
 .admin-product-upload {
   display: grid;
   gap: 10px;
@@ -410,8 +404,7 @@
     grid-template-columns: 1fr;
   }
 
-  .admin-product-form__grid,
-  .admin-product-slug-row {
+  .admin-product-form__grid {
     grid-template-columns: 1fr;
   }
 

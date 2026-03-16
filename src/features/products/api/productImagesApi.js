@@ -4,12 +4,37 @@ export const PRODUCT_IMAGES_BUCKET = 'product-images';
 
 const PRODUCT_IMAGES_PUBLIC_PREFIX = `/storage/v1/object/public/${PRODUCT_IMAGES_BUCKET}/`;
 
+function mapStorageErrorMessage(error, action = 'upload') {
+  const message = String(error?.message || '').trim();
+  const normalizedMessage = message.toLowerCase();
+
+  if (normalizedMessage.includes('bucket not found')) {
+    return `Bucket "${PRODUCT_IMAGES_BUCKET}" не найден в Supabase Storage. Создай его в Storage или выполни SQL из файла supabase/setup/04_product_images_storage.sql.`;
+  }
+
+  if (
+    normalizedMessage.includes('row level security')
+    || normalizedMessage.includes('not allowed')
+    || normalizedMessage.includes('unauthorized')
+  ) {
+    return `Нет доступа к bucket "${PRODUCT_IMAGES_BUCKET}". Проверь policies для storage.objects и роли anon/authenticated в Supabase.`;
+  }
+
+  if (message) {
+    return message;
+  }
+
+  return action === 'delete'
+    ? 'Не удалось удалить изображение из Supabase Storage.'
+    : 'Не удалось загрузить изображение в Supabase Storage.';
+}
+
 function normalizeStorageSegment(value) {
   return String(value || '')
     .toLowerCase()
     .trim()
     .replace(/['’"]/g, '')
-    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
 
@@ -63,7 +88,7 @@ export async function uploadProductImage(file, options = {}) {
     });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapStorageErrorMessage(error, 'upload'));
   }
 
   const { data } = supabase.storage
@@ -88,7 +113,7 @@ export async function deleteManagedProductImage(imageUrl) {
     .remove([imagePath]);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapStorageErrorMessage(error, 'delete'));
   }
 
   return true;

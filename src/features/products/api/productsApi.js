@@ -9,6 +9,34 @@ import {
 const CATEGORIES_SELECT = 'id, name, slug';
 const PUBLIC_PRODUCTS_FILTER = 'is_active.eq.true,is_active.is.null';
 
+function mapProductsApiErrorMessage(error, action = 'load') {
+  const message = String(error?.message || '').trim();
+  const normalizedMessage = message.toLowerCase();
+
+  if (normalizedMessage.includes('row-level security')) {
+    return 'Доступ к таблице products ограничен RLS. Выполни SQL из файла supabase/setup/03_public_policies.sql в Supabase.';
+  }
+
+  if (normalizedMessage.includes('null value in column "category_id"')) {
+    return 'В базе category_id помечен как обязательный, а форма поддерживает товар без категории. Выполни SQL из файла supabase/setup/01_catalog_schema.sql или выбери категорию вручную.';
+  }
+
+  if (message) {
+    return message;
+  }
+
+  switch (action) {
+    case 'create':
+      return 'Не удалось создать товар.';
+    case 'update':
+      return 'Не удалось сохранить товар.';
+    case 'delete':
+      return 'Не удалось удалить товар.';
+    default:
+      return 'Не удалось загрузить товары.';
+  }
+}
+
 async function getCategoriesByIds(categoryIds) {
   if (categoryIds.length === 0) {
     return [];
@@ -20,7 +48,7 @@ async function getCategoriesByIds(categoryIds) {
     .in('id', categoryIds);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error));
   }
 
   return data ?? [];
@@ -36,6 +64,34 @@ async function mergeProductsWithResolvedCategories(products) {
   return mergeProductsWithCategories(normalizedProducts, categories);
 }
 
+async function getProductRowById(productId) {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_DB_SELECT)
+    .eq('id', productId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(mapProductsApiErrorMessage(error));
+  }
+
+  return data ?? null;
+}
+
+async function getResolvedProductById(productId, actionLabel) {
+  const productRow = await getProductRowById(productId);
+
+  if (!productRow) {
+    throw new Error(
+      `Товар ${actionLabel}, но Supabase не вернул запись #${productId}. Проверь доступ SELECT/UPDATE для таблицы products.`,
+    );
+  }
+
+  const [product] = await mergeProductsWithResolvedCategories([productRow]);
+
+  return product;
+}
+
 export async function getCategories() {
   const { data, error } = await supabase
     .from('categories')
@@ -43,7 +99,7 @@ export async function getCategories() {
     .order('id', { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error));
   }
 
   return (data ?? []).map(normalizeCategory);
@@ -57,7 +113,7 @@ export async function getProducts() {
     .order('id', { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error));
   }
 
   return mergeProductsWithResolvedCategories(data);
@@ -70,7 +126,7 @@ export async function getAdminProducts() {
     .order('id', { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error));
   }
 
   return mergeProductsWithResolvedCategories(data);
@@ -85,7 +141,7 @@ export async function getProductBySlug(slug) {
     .maybeSingle();
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error));
   }
 
   if (!data) {
@@ -102,34 +158,34 @@ export async function createProduct(product) {
   const { data, error } = await supabase
     .from('products')
     .insert(payload)
-    .select(PRODUCT_DB_SELECT)
-    .single();
+    .select('id')
+    .maybeSingle();
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error, 'create'));
   }
 
-  const [createdProduct] = await mergeProductsWithResolvedCategories([data]);
+  if (!data?.id) {
+    throw new Error(
+      'Товар создан, но Supabase не вернул id новой записи. Проверь доступ SELECT для таблицы products.',
+    );
+  }
 
-  return createdProduct;
+  return getResolvedProductById(data.id, 'создан');
 }
 
 export async function updateProduct(productId, product) {
   const payload = serializeProductForWrite(product);
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('products')
     .update(payload)
-    .eq('id', productId)
-    .select(PRODUCT_DB_SELECT)
-    .single();
+    .eq('id', productId);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error, 'update'));
   }
 
-  const [updatedProduct] = await mergeProductsWithResolvedCategories([data]);
-
-  return updatedProduct;
+  return getResolvedProductById(productId, 'сохранен');
 }
 
 export async function deleteProduct(productId) {
@@ -139,6 +195,6 @@ export async function deleteProduct(productId) {
     .eq('id', productId);
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapProductsApiErrorMessage(error, 'delete'));
   }
 }

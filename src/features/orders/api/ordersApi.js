@@ -8,6 +8,28 @@ import {
   validateOrderForm,
 } from '../model';
 
+function mapOrdersApiErrorMessage(error, action = 'load') {
+  const message = String(error?.message || '').trim();
+  const normalizedMessage = message.toLowerCase();
+
+  if (normalizedMessage.includes('row-level security')) {
+    return 'Доступ к таблицам orders/order_items ограничен RLS. Выполни SQL из файла supabase/setup/03_public_policies.sql в Supabase.';
+  }
+
+  if (message) {
+    return message;
+  }
+
+  switch (action) {
+    case 'create':
+      return 'Не удалось оформить заказ.';
+    case 'update':
+      return 'Не удалось обновить статус заказа.';
+    default:
+      return 'Не удалось загрузить заказы.';
+  }
+}
+
 async function rollbackOrder(orderId) {
   if (!orderId) {
     return;
@@ -37,7 +59,7 @@ export async function createOrder(values, items) {
     .single();
 
   if (orderError) {
-    throw new Error(orderError.message);
+    throw new Error(mapOrdersApiErrorMessage(orderError, 'create'));
   }
 
   const orderItemsPayload = serializeOrderItemsForWrite(order.id, items);
@@ -47,7 +69,7 @@ export async function createOrder(values, items) {
 
   if (itemsError) {
     await rollbackOrder(order.id);
-    throw new Error(itemsError.message);
+    throw new Error(mapOrdersApiErrorMessage(itemsError, 'create'));
   }
 
   return order;
@@ -60,7 +82,7 @@ export async function getAdminOrders() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapOrdersApiErrorMessage(error));
   }
 
   return (data ?? []).map((order) => normalizeOrderModel(order));
@@ -76,7 +98,7 @@ export async function updateOrderStatus(orderId, status) {
     .single();
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapOrdersApiErrorMessage(error, 'update'));
   }
 
   return normalizeOrderModel(data);

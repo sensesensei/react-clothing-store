@@ -5,7 +5,6 @@ import {
   RiRefreshLine,
   RiSaveLine,
   RiSearchLine,
-  RiSparklingLine,
 } from 'react-icons/ri';
 import {
   createProduct,
@@ -40,6 +39,8 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   year: 'numeric',
 });
 const MAX_PRODUCT_IMAGE_SIZE = 5 * 1024 * 1024;
+const PRODUCT_SLUG_PATTERN = /^[A-Za-z0-9-]+$/;
+const PRODUCT_SLUG_ERROR = 'Только латиница, цифры и дефис.';
 
 function sortProductsById(products) {
   return [...products].sort((firstProduct, secondProduct) =>
@@ -113,6 +114,14 @@ function validateProductImageFile(file) {
   }
 
   return '';
+}
+
+function getSlugValidationError(value) {
+  if (!value || PRODUCT_SLUG_PATTERN.test(value)) {
+    return '';
+  }
+
+  return PRODUCT_SLUG_ERROR;
 }
 
 function AdminProductsPage() {
@@ -282,11 +291,30 @@ function AdminProductsPage() {
 
   function handleFieldChange(event) {
     const { checked, name, type, value } = event.target;
-    updateDraftField(name, type === 'checkbox' ? checked : value);
-  }
+    const nextValue = type === 'checkbox' ? checked : value;
 
-  function handleGenerateSlug() {
-    updateDraftField('slug', slugifyValue(draft.title));
+    updateDraftField(name, nextValue);
+
+    if (name === 'slug') {
+      const slugError = getSlugValidationError(nextValue);
+
+      setFormErrors((currentErrors) => {
+        if (!slugError) {
+          if (!currentErrors.slug) {
+            return currentErrors;
+          }
+
+          const nextErrors = { ...currentErrors };
+          delete nextErrors.slug;
+          return nextErrors;
+        }
+
+        return {
+          ...currentErrors,
+          slug: slugError,
+        };
+      });
+    }
   }
 
   async function handleImageUpload(event) {
@@ -306,6 +334,18 @@ function AdminProductsPage() {
       return;
     }
 
+    const slugError = getSlugValidationError(draft.slug);
+
+    if (!draft.slug || slugError) {
+      setFormErrors((currentErrors) => ({
+        ...currentErrors,
+        slug: slugError || PRODUCT_SLUG_ERROR,
+      }));
+      setImageUploadError('Перед загрузкой фото укажи корректный slug товара.');
+      setImageUploadMessage('');
+      return;
+    }
+
     const previousDraftImageUrl = draft.imageUrl;
     const persistedImageUrl = selectedProduct?.imageUrl || '';
 
@@ -315,7 +355,7 @@ function AdminProductsPage() {
       setImageUploadMessage('');
 
       const uploadedImage = await uploadProductImage(file, {
-        slug: slugifyValue(draft.slug || draft.title || file.name),
+        slug: slugifyValue(draft.slug),
       });
 
       if (
@@ -378,6 +418,11 @@ function AdminProductsPage() {
 
     const productPayload = buildProductPayload(draft);
     const validationErrors = validateProductModel(productPayload);
+    const slugError = getSlugValidationError(productPayload.slug);
+
+    if (slugError) {
+      validationErrors.slug = slugError;
+    }
 
     if (Object.keys(validationErrors).length > 0) {
       setFormErrors(validationErrors);
@@ -680,23 +725,19 @@ function AdminProductsPage() {
                 <span className="admin-product-field__label">
                   {PRODUCT_FIELDS.slug.label} *
                 </span>
-                <div className="admin-product-slug-row">
-                  <input
-                    type="text"
-                    name="slug"
-                    value={draft.slug}
-                    onChange={handleFieldChange}
-                    className={`admin-product-input${formErrors.slug ? ' is-invalid' : ''}`}
-                  />
-                  <button
-                    type="button"
-                    className="admin-products-action-button"
-                    onClick={handleGenerateSlug}
-                  >
-                    <RiSparklingLine size={16} aria-hidden="true" />
-                    <span>Сгенерировать</span>
-                  </button>
-                </div>
+                <input
+                  type="text"
+                  name="slug"
+                  value={draft.slug}
+                  onChange={handleFieldChange}
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className={`admin-product-input${formErrors.slug ? ' is-invalid' : ''}`}
+                />
+                <span className="admin-product-field__hint">
+                  Только латиница, цифры и дефис.
+                </span>
                 {formErrors.slug ? (
                   <span className="admin-product-field__error">{formErrors.slug}</span>
                 ) : null}
@@ -920,3 +961,4 @@ function AdminProductsPage() {
 }
 
 export default AdminProductsPage;
+
