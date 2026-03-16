@@ -14,7 +14,11 @@ function mapProductsApiErrorMessage(error, action = 'load') {
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes('row-level security')) {
-    return 'Доступ к таблице products ограничен RLS. Выполни SQL из файла supabase/setup/03_public_policies.sql в Supabase.';
+    if (action === 'create' || action === 'update' || action === 'delete' || action === 'admin-load') {
+      return 'Управление товарами доступно только администратору. Выполни вход и проверь SQL из файла supabase/setup/06_admin_policies.sql.';
+    }
+
+    return 'Доступ к таблице products ограничен RLS. Проверь SQL из файла supabase/setup/06_admin_policies.sql.';
   }
 
   if (normalizedMessage.includes('null value in column "category_id"')) {
@@ -126,7 +130,7 @@ export async function getAdminProducts() {
     .order('id', { ascending: true });
 
   if (error) {
-    throw new Error(mapProductsApiErrorMessage(error));
+    throw new Error(mapProductsApiErrorMessage(error, 'admin-load'));
   }
 
   return mergeProductsWithResolvedCategories(data);

@@ -1,5 +1,7 @@
-import { RiArrowLeftLine, RiBox3Line, RiDashboardLine, RiShoppingBag3Line } from 'react-icons/ri';
+import { useState } from 'react';
+import { RiArrowLeftLine, RiBox3Line, RiDashboardLine, RiLogoutBoxRLine, RiShoppingBag3Line } from 'react-icons/ri';
 import { NavLink, Outlet } from 'react-router-dom';
+import { useAuth } from '../features/auth';
 import { Button } from '../shared/ui';
 import './AdminLayout.css';
 
@@ -23,6 +25,22 @@ const navigationItems = [
 ];
 
 function AdminLayout() {
+  const { displayName, signOut, user } = useAuth();
+  const [signOutError, setSignOutError] = useState('');
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    try {
+      setIsSigningOut(true);
+      setSignOutError('');
+      await signOut();
+    } catch (error) {
+      setSignOutError(error.message || 'Не удалось выйти из аккаунта.');
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
+
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
@@ -30,7 +48,7 @@ function AdminLayout() {
           <p className="admin-sidebar__eyebrow">Parfum</p>
           <h1 className="admin-sidebar__title">Admin panel</h1>
           <p className="admin-sidebar__text">
-            Отдельная рабочая зона для управления магазином.
+            Доступ в рабочую зону открыт только для аккаунтов с ролью администратора.
           </p>
         </div>
 
@@ -56,7 +74,7 @@ function AdminLayout() {
 
         <div className="admin-sidebar__footer">
           <p className="admin-sidebar__hint">
-            Сейчас это фундамент. Следом подключим CRUD товаров и список заказов.
+            Текущий вход выполнен как {displayName || user?.email || 'администратор'}.
           </p>
 
           <Button to="/" variant="primary" size="md" className="admin-sidebar__back">
@@ -72,7 +90,30 @@ function AdminLayout() {
             <p className="admin-topbar__eyebrow">Back office</p>
             <p className="admin-topbar__title">Управление каталогом и заказами</p>
           </div>
+
+          <div className="admin-topbar__actions">
+            <div className="admin-topbar__profile">
+              <p className="admin-topbar__label">Авторизован как</p>
+              <p className="admin-topbar__email">{displayName || user?.email || 'Администратор'}</p>
+            </div>
+
+            <button
+              type="button"
+              className="admin-topbar__logout"
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+            >
+              <RiLogoutBoxRLine size={16} aria-hidden="true" />
+              <span>{isSigningOut ? 'Выходим...' : 'Выйти'}</span>
+            </button>
+          </div>
         </header>
+
+        {signOutError ? (
+          <p className="admin-topbar__error" role="alert">
+            {signOutError}
+          </p>
+        ) : null}
 
         <main className="admin-content">
           <Outlet />

@@ -13,7 +13,11 @@ function mapOrdersApiErrorMessage(error, action = 'load') {
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes('row-level security')) {
-    return 'Доступ к таблицам orders/order_items ограничен RLS. Выполни SQL из файла supabase/setup/03_public_policies.sql в Supabase.';
+    if (action === 'load' || action === 'update') {
+      return 'Список заказов и смена статуса доступны только администратору. Проверь вход и SQL из файла supabase/setup/06_admin_policies.sql.';
+    }
+
+    return 'Оформление заказа недоступно из-за RLS. Проверь SQL из файла supabase/setup/06_admin_policies.sql.';
   }
 
   if (message) {

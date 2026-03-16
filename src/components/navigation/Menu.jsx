@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../features/auth';
 import { CartQuantityBadge, useCart } from '../../features/cart';
 import './Menu.css';
 
 function Menu() {
   const { totalItems } = useCart();
+  const { displayName, isAdmin, isAuthenticated, isLoading, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
+  const [authActionError, setAuthActionError] = useState('');
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const dropdownRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -30,6 +34,24 @@ function Menu() {
       clearTimeout(timerRef.current);
     }
   };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+    resetTimer();
+  };
+
+  async function handleSignOut() {
+    try {
+      setIsSigningOut(true);
+      setAuthActionError('');
+      await signOut();
+      closeDropdown();
+    } catch (error) {
+      setAuthActionError(error.message || 'Не удалось выйти из аккаунта.');
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -83,15 +105,54 @@ function Menu() {
 
           {isDropdownOpen ? (
             <div className="dropdown-menu">
-              <NavLink to="/admin" className="dropdown-item">
-                Админка
-              </NavLink>
-              <NavLink to="/login" className="dropdown-item">
-                Войти
-              </NavLink>
-              <NavLink to="/register" className="dropdown-item">
-                Зарегистрироваться
-              </NavLink>
+              {isLoading ? (
+                <div className="dropdown-note">Проверяем доступ...</div>
+              ) : null}
+
+              {isAuthenticated ? (
+                <>
+                  <div className="dropdown-note">
+                    <strong>{isAdmin ? 'Администратор' : 'Доступ без admin-роли'}</strong>
+                    <span>{displayName || 'Аккаунт Supabase'}</span>
+                  </div>
+
+                  {isAdmin ? (
+                    <NavLink to="/admin" className="dropdown-item" onClick={closeDropdown}>
+                      Админка
+                    </NavLink>
+                  ) : null}
+
+                  {!isAdmin ? (
+                    <NavLink to="/register" className="dropdown-item" onClick={closeDropdown}>
+                      Как получить доступ
+                    </NavLink>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    className="dropdown-item"
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                  >
+                    {isSigningOut ? 'Выходим...' : 'Выйти'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/login" className="dropdown-item" onClick={closeDropdown}>
+                    Вход для администратора
+                  </NavLink>
+                  <NavLink to="/register" className="dropdown-item" onClick={closeDropdown}>
+                    Как получить доступ
+                  </NavLink>
+                </>
+              )}
+
+              {authActionError ? (
+                <div className="dropdown-note is-error" role="alert">
+                  {authActionError}
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>

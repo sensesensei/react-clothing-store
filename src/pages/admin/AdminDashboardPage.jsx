@@ -91,11 +91,11 @@ function AdminDashboardPage() {
     <section className="admin-page">
       <div className="admin-page__hero">
         <div>
-          <p className="admin-page__eyebrow">Stage 1</p>
-          <h2 className="admin-page__title">Фундамент админ-панели</h2>
+          <p className="admin-page__eyebrow">Stage 2</p>
+          <h2 className="admin-page__title">Админ-доступ и рабочая зона</h2>
           <p className="admin-page__description">
-            Мы отделили back office от витрины и подготовили базовый shell для
-            управления магазином. Следующие шаги уже пойдут внутри этой зоны.
+            Back office теперь работает как отдельная защищенная зона: доступ
+            открывается через Supabase Auth и роль администратора.
           </p>
         </div>
 
@@ -128,31 +128,30 @@ function AdminDashboardPage() {
 
       <div className="admin-content-grid">
         <article className="admin-card">
-          <p className="admin-card__eyebrow">Что уже готово</p>
-          <h3 className="admin-card__title">Проектная база под админку есть</h3>
+          <p className="admin-card__eyebrow">Что уже работает</p>
+          <h3 className="admin-card__title">Товары, заказы и access control на месте</h3>
           <p className="admin-card__text">
-            В проекте уже подготовлена продуктовая модель с полями `stock`,
-            `isActive`, `categoryId`, сериализацией и валидацией. Это хороший
-            фундамент для CRUD товаров.
+            В проекте уже есть рабочие экраны товаров и заказов, а доступ к ним
+            теперь можно ограничивать через роль `admin` и новые policies в Supabase.
           </p>
         </article>
 
         <article className="admin-card">
-          <p className="admin-card__eyebrow">Следующий спринт</p>
-          <h3 className="admin-card__title">Следом: доступ и безопасность</h3>
+          <p className="admin-card__eyebrow">Контроль доступа</p>
+          <h3 className="admin-card__title">Что проверять после выдачи роли</h3>
           <ul className="admin-checklist">
-            <li>Авторизация администратора через реальный auth flow</li>
-            <li>Защита `/admin` и ограничение доступа по ролям</li>
-            <li>RLS и policies для безопасной работы с Supabase</li>
+            <li>Вход через email и пароль администратора</li>
+            <li>Доступ к `/admin` только для `profiles.role = admin`</li>
+            <li>CRUD товаров, заказы и Storage только под админ-ролью</li>
           </ul>
         </article>
 
         <article className="admin-card admin-card--accent">
           <p className="admin-card__eyebrow">Важно</p>
-          <h3 className="admin-card__title">Безопасность вынесем отдельным этапом</h3>
+          <h3 className="admin-card__title">Доступ выдается через Supabase</h3>
           <p className="admin-card__text">
-            Сейчас это UI-фундамент. Перед настоящим прод-доступом добавим
-            авторизацию администратора и правила доступа в Supabase.
+            Новый администратор создается в Supabase Auth, а затем ему назначается
+            роль `admin` в таблице `profiles`. Без этой роли админка останется закрытой.
           </p>
         </article>
 
@@ -160,8 +159,8 @@ function AdminDashboardPage() {
           <p className="admin-card__eyebrow">Быстрый переход</p>
           <h3 className="admin-card__title">Открыть раздел товаров</h3>
           <p className="admin-card__text">
-            Следующий шаг логично начинать именно отсюда: там уже есть доменная
-            модель, и это даст самый быстрый прогресс.
+            Здесь быстрее всего проверить, что защита доступа и рабочий CRUD ведут
+            себя одинаково стабильно после входа под админом.
           </p>
           <Button to="/admin/products" variant="primary" size="md" className="admin-card__button">
             Перейти

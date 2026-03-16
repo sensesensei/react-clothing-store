@@ -17,7 +17,7 @@ function mapStorageErrorMessage(error, action = 'upload') {
     || normalizedMessage.includes('not allowed')
     || normalizedMessage.includes('unauthorized')
   ) {
-    return `Нет доступа к bucket "${PRODUCT_IMAGES_BUCKET}". Проверь policies для storage.objects и роли anon/authenticated в Supabase.`;
+    return `Нет доступа к bucket "${PRODUCT_IMAGES_BUCKET}". Загрузка и удаление файлов доступны только администратору. Проверь SQL из файла supabase/setup/07_admin_storage_policies.sql.`;
   }
 
   if (message) {

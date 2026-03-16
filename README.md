@@ -42,6 +42,9 @@ REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
 2. `supabase/setup/02_orders_schema.sql`
 3. `supabase/setup/03_public_policies.sql`
 4. `supabase/setup/04_product_images_storage.sql`
+5. `supabase/setup/05_auth_roles.sql`
+6. `supabase/setup/06_admin_policies.sql`
+7. `supabase/setup/07_admin_storage_policies.sql`
 
 ## Current State
 
@@ -53,5 +56,7 @@ REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
 - checkout с сохранением заказов в Supabase
 - admin-панель товаров
 - admin-панель заказов
+- вход администратора через Supabase Auth
+- защита `/admin` и admin-only policies для редактирования данных
 
-Следующий крупный этап после текущего setup — auth, роли и защита `/admin`.
+Текущий крупный этап: auth, роли и защита `/admin`.
