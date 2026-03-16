@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { RiAccountCircleLine } from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
+import navbarLogo from '../../assets/navbar-logo.png';
 import { useAuth } from '../../features/auth';
 import { CartQuantityBadge, useCart } from '../../features/cart';
 import './Menu.css';
@@ -79,7 +80,7 @@ function Menu() {
     <nav className="menu">
       <div className="nav-top">
         <NavLink to="/" end className="logo-link">
-          <img src="/navbar-logo.png" alt="Логотип Human Sense" className="logo" />
+          <img src={navbarLogo} alt="Логотип Human Sense" className="logo" />
         </NavLink>
 
         <div

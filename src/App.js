@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/home/HomePage';
 import AboutPage from './pages/about/AboutPage';
 import ContactPage from './pages/contact/ContactPage';
@@ -22,18 +22,18 @@ import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         <CartProvider>
           <div className="App">
             <Routes>
               <Route
                 path="/admin"
-                element={(
+                element={
                   <ProtectedAdminRoute>
                     <AdminLayout />
                   </ProtectedAdminRoute>
-                )}
+                }
               >
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="categories" element={<AdminCategoriesPage />} />
@@ -46,7 +46,10 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+                <Route
+                  path="/checkout/success"
+                  element={<CheckoutSuccessPage />}
+                />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/catalog" element={<CatalogPage />} />
                 <Route path="/catalog/:slug" element={<ProductPage />} />
@@ -58,7 +61,7 @@ function App() {
           </div>
         </CartProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

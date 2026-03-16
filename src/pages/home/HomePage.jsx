@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import homeHeroBanner from '../../assets/home-hero-banner.png';
 import { getProducts } from '../../features/products/api';
 import { ProductGrid } from '../../features/products/ui';
 import { EmptyState, ErrorState, Loader } from '../../shared/ui';
@@ -42,7 +43,7 @@ function HomePage() {
     <div className="home-wrapper">
       <section className="home-hero">
         <img
-          src="/home-hero-banner.png"
+          src={homeHeroBanner}
           alt="Подборка одежды Parfum"
           className="home-hero__image"
         />
