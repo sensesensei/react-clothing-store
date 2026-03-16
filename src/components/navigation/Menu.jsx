@@ -79,7 +79,7 @@ function Menu() {
     <nav className="menu">
       <div className="nav-top">
         <NavLink to="/" end className="logo-link">
-          <img src="/Frame 36-Photoroom.png" alt="Логотип Parfum" className="logo" />
+          <img src="/navbar-logo.png" alt="Логотип Human Sense" className="logo" />
         </NavLink>
 
         <div
