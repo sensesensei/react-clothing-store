@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { RiArrowLeftLine, RiBox3Line, RiDashboardLine, RiLogoutBoxRLine, RiShoppingBag3Line } from 'react-icons/ri';
+import {
+  RiArrowLeftLine,
+  RiBox3Line,
+  RiDashboardLine,
+  RiLogoutBoxRLine,
+  RiPriceTag3Line,
+  RiShoppingBag3Line,
+} from 'react-icons/ri';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth';
 import { Button } from '../shared/ui';
@@ -11,6 +18,11 @@ const navigationItems = [
     end: true,
     label: 'Dashboard',
     icon: RiDashboardLine,
+  },
+  {
+    to: '/admin/categories',
+    label: 'Категории',
+    icon: RiPriceTag3Line,
   },
   {
     to: '/admin/products',

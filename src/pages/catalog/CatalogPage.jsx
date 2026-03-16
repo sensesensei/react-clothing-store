@@ -41,28 +41,13 @@ function sortProducts(products, key) {
   return sortedProducts;
 }
 
-function getCatalogEmptyState({ category, categoryLabel, hasProducts, searchQuery }) {
-  const normalizedSearchQuery = searchQuery.trim();
+function getCatalogEmptyState({ category, categoryLabel, hasProducts }) {
   const currentCategoryLabel = categoryLabel || String(category || '');
 
   if (!hasProducts) {
     return {
       title: 'Каталог пока пуст',
       message: 'Товары появятся здесь, когда будут добавлены в базу.',
-    };
-  }
-
-  if (normalizedSearchQuery && currentCategoryLabel) {
-    return {
-      title: 'Ничего не найдено',
-      message: `По запросу "${normalizedSearchQuery}" в категории "${currentCategoryLabel}" товаров пока нет.`,
-    };
-  }
-
-  if (normalizedSearchQuery) {
-    return {
-      title: 'Ничего не найдено',
-      message: `По запросу "${normalizedSearchQuery}" мы не нашли ни одного товара.`,
     };
   }
 
@@ -85,7 +70,6 @@ function CatalogPage() {
   const query = queryString.parse(location.search);
 
   const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -164,23 +148,8 @@ function CatalogPage() {
     return matchedProduct?.category?.name || category;
   }, [products, category]);
 
-  const filteredProducts = useMemo(() => {
-    const searchLower = searchQuery.trim().toLowerCase();
-
-    if (!searchLower) {
-      return categoryProducts;
-    }
-
-    return categoryProducts.filter((product) => {
-      const title = product.title?.toLowerCase() || '';
-      const slug = product.slug?.toLowerCase() || '';
-
-      return title.includes(searchLower) || slug.includes(searchLower);
-    });
-  }, [categoryProducts, searchQuery]);
-
   const emptyState = useMemo(() => {
-    if (filteredProducts.length > 0) {
+    if (categoryProducts.length > 0) {
       return null;
     }
 
@@ -188,9 +157,8 @@ function CatalogPage() {
       category,
       categoryLabel,
       hasProducts: products.length > 0,
-      searchQuery,
     });
-  }, [category, categoryLabel, filteredProducts.length, products.length, searchQuery]);
+  }, [category, categoryLabel, categoryProducts.length, products.length]);
 
   if (loading) {
     return <Loader label="Загрузка товаров..." />;
@@ -202,33 +170,11 @@ function CatalogPage() {
 
   return (
     <div className="catalog-container">
-      <div className="search-section">
-        <input
-          type="text"
-          placeholder="Поиск по названию или артикулу..."
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          className="search-input"
-        />
-
-        {searchQuery ? (
-          <span className="search-results-count">
-            Найдено: {filteredProducts.length}
-          </span>
-        ) : null}
-
-        {category ? (
-          <span className="category-label">
-            Категория: <strong>{categoryLabel}</strong>
-          </span>
-        ) : null}
-      </div>
-
       {emptyState ? (
         <EmptyState title={emptyState.title} message={emptyState.message} />
       ) : (
         <ProductGrid
-          products={filteredProducts}
+          products={categoryProducts}
           title={
             category
               ? categoryLabel

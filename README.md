@@ -54,6 +54,7 @@ REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
 - каталог и карточка товара
 - корзина
 - checkout с сохранением заказов в Supabase
+- admin-панель категорий
 - admin-панель товаров
 - admin-панель заказов
 - вход администратора через Supabase Auth

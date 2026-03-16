@@ -1,10 +1,13 @@
 export {
+  createCategory,
   createProduct,
+  deleteCategory,
   deleteProduct,
   getAdminProducts,
   getCategories,
   getProductBySlug,
   getProducts,
+  updateCategory,
   updateProduct,
 } from './productsApi';
 export {

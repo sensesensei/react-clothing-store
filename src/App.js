@@ -13,6 +13,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import NotFoundPage from './pages/not-found/NotFoundPage';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import { AuthProvider, ProtectedAdminRoute } from './features/auth';
@@ -35,6 +36,7 @@ function App() {
                 )}
               >
                 <Route index element={<AdminDashboardPage />} />
+                <Route path="categories" element={<AdminCategoriesPage />} />
                 <Route path="products" element={<AdminProductsPage />} />
                 <Route path="orders" element={<AdminOrdersPage />} />
               </Route>

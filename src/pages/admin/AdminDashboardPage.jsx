@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { RiArrowRightUpLine, RiBox3Line, RiEyeOffLine, RiFolderOpenLine, RiShoppingBag3Line } from 'react-icons/ri';
+import {
+  RiArrowRightUpLine,
+  RiBox3Line,
+  RiEyeOffLine,
+  RiFolderOpenLine,
+  RiPriceTag3Line,
+  RiShoppingBag3Line,
+} from 'react-icons/ri';
 import { getAdminProducts, getCategories } from '../../features/products/api';
 import { Button, ErrorState, Loader } from '../../shared/ui';
 import './AdminPage.css';
@@ -55,29 +62,43 @@ function AdminDashboardPage() {
       {
         title: 'Товаров в базе',
         value: products.length,
-        hint: 'Основа для будущей таблицы товаров.',
         icon: RiBox3Line,
       },
       {
         title: 'Активных товаров',
         value: activeProducts,
-        hint: 'Их стоит выводить на витрину.',
         icon: RiFolderOpenLine,
       },
       {
         title: 'Скрытых товаров',
         value: hiddenProducts,
-        hint: 'Полезно для черновиков и снятых позиций.',
         icon: RiEyeOffLine,
       },
       {
         title: 'Категорий',
         value: categories.length,
-        hint: 'Категории уже используются в навигации каталога.',
         icon: RiShoppingBag3Line,
       },
     ];
   }, [categories.length, products]);
+
+  const quickLinks = [
+    {
+      title: 'Категории',
+      to: '/admin/categories',
+      icon: RiPriceTag3Line,
+    },
+    {
+      title: 'Товары',
+      to: '/admin/products',
+      icon: RiBox3Line,
+    },
+    {
+      title: 'Заказы',
+      to: '/admin/orders',
+      icon: RiShoppingBag3Line,
+    },
+  ];
 
   if (loading) {
     return <Loader label="Загрузка dashboard..." />;
@@ -92,14 +113,16 @@ function AdminDashboardPage() {
       <div className="admin-page__hero">
         <div>
           <p className="admin-page__eyebrow">Stage 2</p>
-          <h2 className="admin-page__title">Админ-доступ и рабочая зона</h2>
+          <h2 className="admin-page__title">Панель управления магазином</h2>
           <p className="admin-page__description">
-            Back office теперь работает как отдельная защищенная зона: доступ
-            открывается через Supabase Auth и роль администратора.
+            Отсюда можно управлять категориями, товарами и заказами в одной защищенной зоне.
           </p>
         </div>
 
         <div className="admin-page__actions">
+          <Button to="/admin/categories" variant="primary" size="md">
+            К категориям
+          </Button>
           <Button to="/admin/products" variant="primary" size="md">
             К товарам
           </Button>
@@ -120,53 +143,28 @@ function AdminDashboardPage() {
               </div>
               <p className="admin-card__label">{metric.title}</p>
               <p className="admin-card__value">{metric.value}</p>
-              <p className="admin-card__hint">{metric.hint}</p>
             </article>
           );
         })}
       </div>
 
-      <div className="admin-content-grid">
-        <article className="admin-card">
-          <p className="admin-card__eyebrow">Что уже работает</p>
-          <h3 className="admin-card__title">Товары, заказы и access control на месте</h3>
-          <p className="admin-card__text">
-            В проекте уже есть рабочие экраны товаров и заказов, а доступ к ним
-            теперь можно ограничивать через роль `admin` и новые policies в Supabase.
-          </p>
-        </article>
+      <div className="admin-quick-links">
+        {quickLinks.map((link) => {
+          const Icon = link.icon;
 
-        <article className="admin-card">
-          <p className="admin-card__eyebrow">Контроль доступа</p>
-          <h3 className="admin-card__title">Что проверять после выдачи роли</h3>
-          <ul className="admin-checklist">
-            <li>Вход через email и пароль администратора</li>
-            <li>Доступ к `/admin` только для `profiles.role = admin`</li>
-            <li>CRUD товаров, заказы и Storage только под админ-ролью</li>
-          </ul>
-        </article>
-
-        <article className="admin-card admin-card--accent">
-          <p className="admin-card__eyebrow">Важно</p>
-          <h3 className="admin-card__title">Доступ выдается через Supabase</h3>
-          <p className="admin-card__text">
-            Новый администратор создается в Supabase Auth, а затем ему назначается
-            роль `admin` в таблице `profiles`. Без этой роли админка останется закрытой.
-          </p>
-        </article>
-
-        <article className="admin-card admin-card--link">
-          <p className="admin-card__eyebrow">Быстрый переход</p>
-          <h3 className="admin-card__title">Открыть раздел товаров</h3>
-          <p className="admin-card__text">
-            Здесь быстрее всего проверить, что защита доступа и рабочий CRUD ведут
-            себя одинаково стабильно после входа под админом.
-          </p>
-          <Button to="/admin/products" variant="primary" size="md" className="admin-card__button">
-            Перейти
-            <RiArrowRightUpLine size={16} aria-hidden="true" />
-          </Button>
-        </article>
+          return (
+            <article key={link.to} className="admin-card admin-card--link">
+              <div className="admin-card__icon">
+                <Icon size={18} aria-hidden="true" />
+              </div>
+              <h3 className="admin-card__title">{link.title}</h3>
+              <Button to={link.to} variant="primary" size="md" className="admin-card__button">
+                Открыть
+                <RiArrowRightUpLine size={16} aria-hidden="true" />
+              </Button>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

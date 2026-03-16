@@ -1,4 +1,13 @@
 export {
+  CATEGORY_DEFAULTS,
+  CATEGORY_FIELDS,
+  createEmptyCategory,
+  getEditableCategoryValues,
+  normalizeCategoryModel,
+  serializeCategoryForWrite,
+  validateCategoryModel,
+} from './categorySchema';
+export {
   mergeProductsWithCategories,
   normalizeCategory,
   normalizeProduct,

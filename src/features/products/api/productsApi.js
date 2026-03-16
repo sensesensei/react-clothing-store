@@ -1,8 +1,10 @@
 import { supabase } from '../../../services/supabase/client';
 import {
+  normalizeCategoryModel,
   mergeProductsWithCategories,
   normalizeCategory,
   PRODUCT_DB_SELECT,
+  serializeCategoryForWrite,
   serializeProductForWrite,
 } from '../model';
 
@@ -14,15 +16,29 @@ function mapProductsApiErrorMessage(error, action = 'load') {
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes('row-level security')) {
-    if (action === 'create' || action === 'update' || action === 'delete' || action === 'admin-load') {
-      return 'Управление товарами доступно только администратору. Выполни вход и проверь SQL из файла supabase/setup/06_admin_policies.sql.';
+    if (
+      action === 'create'
+      || action === 'update'
+      || action === 'delete'
+      || action === 'admin-load'
+      || action === 'category-create'
+      || action === 'category-update'
+      || action === 'category-delete'
+    ) {
+      return 'Управление каталогом доступно только администратору. Выполни вход и проверь SQL из файла supabase/setup/06_admin_policies.sql.';
     }
 
-    return 'Доступ к таблице products ограничен RLS. Проверь SQL из файла supabase/setup/06_admin_policies.sql.';
+    return 'Доступ к таблицам каталога ограничен RLS. Проверь SQL из файла supabase/setup/06_admin_policies.sql.';
   }
 
   if (normalizedMessage.includes('null value in column "category_id"')) {
     return 'В базе category_id помечен как обязательный, а форма поддерживает товар без категории. Выполни SQL из файла supabase/setup/01_catalog_schema.sql или выбери категорию вручную.';
+  }
+
+  if (normalizedMessage.includes('duplicate key value') && normalizedMessage.includes('slug')) {
+    return action.startsWith('category')
+      ? 'Категория с таким slug уже существует.'
+      : 'Товар с таким slug уже существует.';
   }
 
   if (message) {
@@ -82,6 +98,20 @@ async function getProductRowById(productId) {
   return data ?? null;
 }
 
+async function getCategoryRowById(categoryId) {
+  const { data, error } = await supabase
+    .from('categories')
+    .select(CATEGORIES_SELECT)
+    .eq('id', categoryId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(mapProductsApiErrorMessage(error));
+  }
+
+  return data ?? null;
+}
+
 async function getResolvedProductById(productId, actionLabel) {
   const productRow = await getProductRowById(productId);
 
@@ -100,13 +130,75 @@ export async function getCategories() {
   const { data, error } = await supabase
     .from('categories')
     .select(CATEGORIES_SELECT)
-    .order('id', { ascending: true });
+    .order('name', { ascending: true });
 
   if (error) {
     throw new Error(mapProductsApiErrorMessage(error));
   }
 
   return (data ?? []).map(normalizeCategory);
+}
+
+export async function createCategory(category) {
+  const payload = serializeCategoryForWrite(category);
+  const { data, error } = await supabase
+    .from('categories')
+    .insert(payload)
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(mapProductsApiErrorMessage(error, 'category-create'));
+  }
+
+  if (!data?.id) {
+    throw new Error(
+      'Категория создана, но Supabase не вернул id новой записи. Проверь доступ SELECT для таблицы categories.',
+    );
+  }
+
+  const categoryRow = await getCategoryRowById(data.id);
+
+  if (!categoryRow) {
+    throw new Error(
+      `Категория создана, но Supabase не вернул запись #${data.id}. Проверь доступ SELECT для таблицы categories.`,
+    );
+  }
+
+  return normalizeCategoryModel(categoryRow);
+}
+
+export async function updateCategory(categoryId, category) {
+  const payload = serializeCategoryForWrite(category);
+  const { error } = await supabase
+    .from('categories')
+    .update(payload)
+    .eq('id', categoryId);
+
+  if (error) {
+    throw new Error(mapProductsApiErrorMessage(error, 'category-update'));
+  }
+
+  const categoryRow = await getCategoryRowById(categoryId);
+
+  if (!categoryRow) {
+    throw new Error(
+      `Категория сохранена, но Supabase не вернул запись #${categoryId}. Проверь доступ SELECT для таблицы categories.`,
+    );
+  }
+
+  return normalizeCategoryModel(categoryRow);
+}
+
+export async function deleteCategory(categoryId) {
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('id', categoryId);
+
+  if (error) {
+    throw new Error(mapProductsApiErrorMessage(error, 'category-delete'));
+  }
 }
 
 export async function getProducts() {
