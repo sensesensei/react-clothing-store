@@ -79,7 +79,7 @@ function Menu() {
     <nav className="menu">
       <div className="nav-top">
         <NavLink to="/" end className="logo-link">
-          <img src="/Frame 36-Photoroom.png" alt="Логотип" className="logo" />
+          <img src="/Frame 36-Photoroom.png" alt="Логотип Parfum" className="logo" />
         </NavLink>
 
         <div
@@ -112,7 +112,7 @@ function Menu() {
               {isAuthenticated ? (
                 <>
                   <div className="dropdown-note">
-                    <strong>{isAdmin ? 'Администратор' : 'Доступ без admin-роли'}</strong>
+                    <strong>{isAdmin ? 'Администратор' : 'Без роли администратора'}</strong>
                     <span>{displayName || 'Аккаунт Supabase'}</span>
                   </div>
 
@@ -159,13 +159,13 @@ function Menu() {
       </div>
 
       <div className="menu-links">
-        <NavLink to="/catalog">каталог</NavLink>
+        <NavLink to="/catalog">Каталог</NavLink>
         <NavLink to="/cart" className="menu-cart-link">
-          корзина
+          Корзина
           <CartQuantityBadge count={totalItems} />
         </NavLink>
-        <NavLink to="/about">инфо</NavLink>
-        <NavLink to="/contact">контакты</NavLink>
+        <NavLink to="/about">О проекте</NavLink>
+        <NavLink to="/contact">Контакты</NavLink>
       </div>
     </nav>
   );

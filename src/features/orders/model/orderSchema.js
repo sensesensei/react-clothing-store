@@ -11,21 +11,21 @@ export const DELIVERY_METHODS = Object.freeze([
     label: 'Почта России',
     details: 'от 3 дней',
     price: 900,
-    priceLabel: '900 р.',
+    priceLabel: '900 ₽',
   }),
   Object.freeze({
     value: 'belarus-kazakhstan',
     label: 'Доставка в РБ и КЗ',
     details: '',
     price: 900,
-    priceLabel: '900 р.',
+    priceLabel: '900 ₽',
   }),
   Object.freeze({
     value: 'worldwide',
     label: 'Доставка по миру',
     details: '',
     price: 1500,
-    priceLabel: '1 500 р.',
+    priceLabel: '1 500 ₽',
   }),
 ]);
 
@@ -146,7 +146,7 @@ export function validateOrderForm(values = {}, items = []) {
   const errors = {};
 
   if (!normalizedValues.customerName || normalizedValues.customerName.length < 2) {
-    errors.customerName = 'Укажи Ф.И.О. получателя.';
+    errors.customerName = 'Укажи Ф. И. О. получателя.';
   }
 
   const phoneDigits = normalizedValues.phone.replace(/\D/g, '');

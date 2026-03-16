@@ -1,9 +1,10 @@
 function ContactPage() {
   return (
     <section className="page-shell">
-      <h1 className="page-shell__title">Contact</h1>
+      <h1 className="page-shell__title">Контакты</h1>
       <p className="page-shell__text">
-        Контактная страница готовится. Здесь позже появятся все способы связи.
+        Раздел со способами связи еще в доработке. Пока заказ можно оформить
+        через витрину, а детали мы подтверждаем после оформления.
       </p>
     </section>
   );

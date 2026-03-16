@@ -104,7 +104,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 30px;
+  gap: 26px;
   max-width: 380px;
   padding-top: 42px;
 }
@@ -112,19 +112,41 @@
 .product-summary-head {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  width: 100%;
+}
+
+.product-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(196, 167, 71, 0.12);
+  color: #76590c;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.product-meta-badge.is-status {
+  background: #f2f2f2;
+  color: #1b1b1b;
 }
 
 .product-heading {
   margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
   width: 100%;
-  max-width: none;
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1.75rem, 2.05vw, 2.2rem);
   font-weight: 700;
-  line-height: 1;
+  line-height: 0.96;
   letter-spacing: -0.02em;
-  white-space: nowrap;
 }
 
 .product-pricing {
@@ -188,6 +210,7 @@
 }
 
 .product-buy-button {
+  min-width: 180px;
   box-shadow: none;
 }
 
@@ -212,19 +235,34 @@
   color: #a13a3a;
 }
 
-.product-highlights {
-  margin: 0;
-  padding-left: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
+.product-description {
+  width: 100%;
+  padding-top: 2px;
+}
+
+.product-description-title {
+  margin: 0 0 12px;
   font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.product-description-text {
+  margin: 0;
+  color: #4f4f4f;
   font-size: 0.98rem;
-  line-height: 1.5;
+  line-height: 1.7;
+}
+
+.product-description-text + .product-description-text {
+  margin-top: 12px;
 }
 
 .product-shipping-note {
-  margin: 8px 0 0;
+  margin: 0;
+  padding-top: 18px;
+  border-top: 1px solid #ececec;
+  width: 100%;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 0.98rem;
   line-height: 1.5;
@@ -234,10 +272,6 @@
   .product-detail-layout {
     grid-template-columns: minmax(0, 1.18fr) minmax(280px, 320px);
     gap: 20px;
-  }
-
-  .product-heading {
-    white-space: normal;
   }
 
   .product-main-media {
@@ -302,5 +336,9 @@
 
   .product-current-price {
     font-size: 1.7rem;
+  }
+
+  .product-buy-button {
+    width: 100%;
   }
 }

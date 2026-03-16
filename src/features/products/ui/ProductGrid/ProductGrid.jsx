@@ -28,6 +28,7 @@ function ProductGrid({ products = [], title = 'Товары' }) {
                     src={product.imageUrl}
                     alt={product.title}
                     className="product-image"
+                    loading="lazy"
                   />
                 </Link>
 
@@ -50,7 +51,7 @@ function ProductGrid({ products = [], title = 'Товары' }) {
                     size="sm"
                     className="product-action"
                   >
-                    купить
+                    Подробнее
                   </Button>
                 </div>
               </article>

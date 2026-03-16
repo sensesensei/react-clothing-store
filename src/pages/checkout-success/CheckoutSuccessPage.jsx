@@ -25,10 +25,10 @@ function CheckoutSuccessPage() {
 
         <div className="checkout-success__actions">
           <Button to="/catalog" variant="primary" size="md">
-            вернуться в каталог
+            Вернуться в каталог
           </Button>
           <Link to="/" className="checkout-success__link">
-            на главную
+            На главную
           </Link>
         </div>
       </div>

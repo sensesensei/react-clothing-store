@@ -30,28 +30,3 @@ export function getProductOldPrice(product) {
 export function normalizeSizes(sizes) {
   return normalizeProductSizes(sizes);
 }
-
-export function getProductHighlights(product) {
-  const descriptionItems = product.description
-    ? product.description
-      .split(/\r?\n|[.;]/)
-      .map((item) => item.trim())
-      .filter(Boolean)
-    : [];
-
-  if (descriptionItems.length > 0) {
-    return descriptionItems.slice(0, 4);
-  }
-
-  const fallbackItems = [];
-
-  if (product.category?.name) {
-    fallbackItems.push(`Категория: ${product.category.name}`);
-  }
-
-  if (product.stock !== null && product.stock !== undefined) {
-    fallbackItems.push(Number(product.stock) > 0 ? 'В наличии' : 'Под заказ');
-  }
-
-  return fallbackItems;
-}

@@ -83,7 +83,7 @@ function CheckoutPage() {
 
         <div className="checkout-empty-actions">
           <Button to="/catalog" variant="primary" size="md">
-            в каталог
+            Перейти в каталог
           </Button>
         </div>
       </section>
@@ -101,7 +101,7 @@ function CheckoutPage() {
         </div>
 
         <Button to="/cart" variant="primary" size="md">
-          вернуться в корзину
+          Вернуться в корзину
         </Button>
       </div>
 
@@ -114,7 +114,7 @@ function CheckoutPage() {
 
             <div className="checkout-grid checkout-grid--contacts">
               <label className="checkout-field">
-                <span className="checkout-field__label">Ф.И.О.</span>
+                <span className="checkout-field__label">Ф. И. О.</span>
                 <input
                   type="text"
                   name="customerName"
@@ -170,7 +170,7 @@ function CheckoutPage() {
 
           <section className="checkout-card">
             <div className="checkout-card__head">
-              <h2 className="checkout-card__title">Доставка:</h2>
+              <h2 className="checkout-card__title">Доставка</h2>
             </div>
 
             <label className="checkout-field checkout-field--full">
@@ -276,7 +276,7 @@ function CheckoutPage() {
               </label>
 
               <label className="checkout-field">
-                <span className="checkout-field__label">Квартира/офис</span>
+                <span className="checkout-field__label">Квартира / офис</span>
                 <input
                   type="text"
                   name="apartmentOffice"
@@ -313,7 +313,7 @@ function CheckoutPage() {
               size="md"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'оформляем...' : 'оформить заказ'}
+              {isSubmitting ? 'Оформляем...' : 'Оформить заказ'}
             </Button>
           </div>
         </form>
@@ -358,7 +358,7 @@ function CheckoutPage() {
                     </span>
                     <span className="checkout-summary__item-meta">
                       {item.quantity} шт.
-                      {item.size ? ` • ${item.size}` : ''}
+                      {item.size ? ` / ${item.size}` : ''}
                     </span>
                   </div>
                   <strong className="checkout-summary__item-price">

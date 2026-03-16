@@ -4,7 +4,6 @@ import { useCart } from '../../features/cart';
 import { getProductBySlug } from '../../features/products/api';
 import {
   formatPrice,
-  getProductHighlights,
   getProductOldPrice,
 } from '../../features/products/lib/productUtils';
 import {
@@ -53,7 +52,7 @@ function ProductPage() {
         setProduct(data);
       } catch (err) {
         if (isMounted) {
-          setError(err.message || 'Не удалось загрузить товар');
+          setError(err.message || 'Не удалось загрузить товар.');
         }
       } finally {
         if (isMounted) {
@@ -135,12 +134,18 @@ function ProductPage() {
   const currentPrice = formatPrice(product.price);
   const oldPrice = getProductOldPrice(product);
   const productSizes = product.sizes;
-  const highlights = getProductHighlights(product);
+  const availabilityLabel = product.stock > 0 ? 'В наличии' : 'Под заказ';
+  const descriptionParagraphs = product.description
+    ? product.description
+      .split(/\r?\n+/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+    : [];
 
   return (
     <section className="product-page">
       <Link to="/catalog" className="product-back-link">
-        ← More products
+        ← Вернуться в каталог
       </Link>
 
       <div className="product-detail-layout">
@@ -172,6 +177,13 @@ function ProductPage() {
 
         <aside className="product-summary">
           <div className="product-summary-head">
+            <div className="product-meta">
+              {product.category?.name ? (
+                <span className="product-meta-badge">{product.category.name}</span>
+              ) : null}
+              <span className="product-meta-badge is-status">{availabilityLabel}</span>
+            </div>
+
             <h1 className="product-heading">{product.title}</h1>
 
             <Price
@@ -206,11 +218,11 @@ function ProductPage() {
             <Button
               type="button"
               variant="pill-dark"
-              size="xs"
+              size="md"
               className="product-buy-button"
               onClick={handleAddToCart}
             >
-              купить
+              В корзину
             </Button>
 
             {cartFeedback.text ? (
@@ -220,16 +232,19 @@ function ProductPage() {
             ) : null}
           </div>
 
-          {highlights.length > 0 ? (
-            <ul className="product-highlights">
-              {highlights.map((item, index) => (
-                <li key={`${item}-${index}`}>{item}</li>
+          {descriptionParagraphs.length > 0 ? (
+            <div className="product-description">
+              <h2 className="product-description-title">Описание</h2>
+              {descriptionParagraphs.map((paragraph) => (
+                <p key={paragraph} className="product-description-text">
+                  {paragraph}
+                </p>
               ))}
-            </ul>
+            </div>
           ) : null}
 
           <p className="product-shipping-note">
-            Отправка в течение 1-3 рабочих дней
+            Отправка обычно занимает от 1 до 3 рабочих дней.
           </p>
         </aside>
       </div>

@@ -65,16 +65,19 @@
 
 .cart-item__media {
   display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(180deg, #f4f4f4 0%, #ececec 100%);
+  background: #f3f3f3;
 }
 
 .cart-item__image {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .cart-item__content {
@@ -248,7 +251,7 @@
   }
 
   .cart-item__media {
-    max-width: 220px;
+    max-width: none;
   }
 
   .cart-item__content {

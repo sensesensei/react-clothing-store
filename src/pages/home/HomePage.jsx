@@ -22,7 +22,7 @@ function HomePage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.message || 'Не удалось загрузить товары');
+          setError(err.message || 'Не удалось загрузить товары.');
         }
       } finally {
         if (isMounted) {
@@ -40,13 +40,16 @@ function HomePage() {
 
   return (
     <div className="home-wrapper">
-      <div className="home-hero">
-        <h1>Добро пожаловать в наш магазин</h1>
-        <p>Откройте для себя нашу коллекцию премиум-товаров</p>
-      </div>
+      <section className="home-hero">
+        <img
+          src="/home-hero-banner.png"
+          alt="Подборка одежды Parfum"
+          className="home-hero__image"
+        />
+      </section>
 
       {loading ? (
-        <Loader label="Загрузка товаров..." />
+        <Loader label="Загрузка витрины..." />
       ) : error ? (
         <ErrorState message={error} />
       ) : products.length === 0 ? (
@@ -55,7 +58,7 @@ function HomePage() {
           message="Товары появятся здесь, как только мы добавим их в витрину."
         />
       ) : (
-        <ProductGrid products={products} title="Наш каталог" />
+        <ProductGrid products={products} title="Новая коллекция" />
       )}
     </div>
   );

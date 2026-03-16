@@ -29,7 +29,7 @@ function CartPage() {
 
         <div className="cart-empty-actions">
           <Button to="/catalog" variant="primary" size="md">
-            в каталог
+            Перейти в каталог
           </Button>
         </div>
       </section>
@@ -47,7 +47,7 @@ function CartPage() {
         </div>
 
         <Button to="/catalog" variant="primary" size="md">
-          продолжить покупки
+          Продолжить покупки
         </Button>
       </div>
 
@@ -93,7 +93,7 @@ function CartPage() {
                         onClick={() => decrementItem(item.id)}
                         aria-label={`Уменьшить количество ${item.title}`}
                       >
-                        −
+                        -
                       </button>
 
                       <span className="cart-item__quantity-value">{item.quantity}</span>
@@ -115,7 +115,7 @@ function CartPage() {
                       className="cart-item__remove"
                       onClick={() => removeItem(item.id)}
                     >
-                      удалить
+                      Удалить
                     </button>
                   </div>
                 </div>
@@ -145,17 +145,17 @@ function CartPage() {
           </div>
 
           <p className="cart-summary__note">
-            Всё готово к оформлению. На следующем шаге ты заполнишь контактные
+            Все готово к оформлению. На следующем шаге ты заполнишь контактные
             данные и способ доставки.
           </p>
 
           <div className="cart-summary__actions">
             <Button to="/checkout" variant="primary" size="md" fullWidth>
-              оформить заказ
+              Оформить заказ
             </Button>
 
             <Button to="/catalog" variant="primary" size="md" fullWidth>
-              добавить еще
+              Добавить еще
             </Button>
 
             <button
@@ -163,7 +163,7 @@ function CartPage() {
               className="cart-summary__clear"
               onClick={clearCart}
             >
-              очистить корзину
+              Очистить корзину
             </button>
           </div>
         </aside>
