@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../features/cart';
 import {
@@ -13,9 +13,31 @@ import { formatPrice } from '../../features/products/lib/productUtils';
 import { Button, EmptyState } from '../../shared/ui';
 import './CheckoutPage.css';
 
+const FIELD_FOCUS_ORDER = Object.freeze([
+  'customerName',
+  'email',
+  'phone',
+  'telegram',
+  'city',
+  'deliveryMethod',
+  'street',
+  'house',
+  'entrance',
+  'floor',
+  'apartmentOffice',
+  'comment',
+  'items',
+]);
+
+function getFirstInvalidFieldName(validationErrors = {}) {
+  return FIELD_FOCUS_ORDER.find((fieldName) => validationErrors[fieldName]) || null;
+}
+
 function CheckoutPage() {
   const navigate = useNavigate();
   const { items, clearCart } = useCart();
+  const formRef = useRef(null);
+  const fieldRefs = useRef({});
   const [formValues, setFormValues] = useState(ORDER_FORM_DEFAULTS);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
@@ -24,23 +46,73 @@ function CheckoutPage() {
   const totals = getOrderTotals(items, formValues.deliveryMethod);
   const deliveryPrice = getDeliveryPrice(formValues.deliveryMethod);
 
+  function registerFieldRef(name) {
+    return (node) => {
+      if (node) {
+        fieldRefs.current[name] = node;
+        return;
+      }
+
+      delete fieldRefs.current[name];
+    };
+  }
+
+  function focusFirstInvalidField(validationErrors) {
+    const firstInvalidFieldName = getFirstInvalidFieldName(validationErrors);
+    const targetField = firstInvalidFieldName
+      ? fieldRefs.current[firstInvalidFieldName]
+      : formRef.current;
+
+    if (!targetField) {
+      return;
+    }
+
+    if (typeof targetField.scrollIntoView === 'function') {
+      targetField.scrollIntoView({
+        behavior: 'smooth',
+        block: targetField === formRef.current ? 'start' : 'center',
+      });
+    }
+
+    if (typeof targetField.focus === 'function') {
+      targetField.focus({ preventScroll: true });
+    }
+  }
+
   function handleFieldChange(event) {
     const { name, value } = event.target;
-
-    setFormValues((currentValues) => ({
-      ...currentValues,
+    const nextValues = {
+      ...formValues,
       [name]: value,
-    }));
+    };
+
+    setFormValues(nextValues);
 
     setErrors((currentErrors) => {
       if (!currentErrors[name]) {
         return currentErrors;
       }
 
+      const nextValidationErrors = validateOrderForm(nextValues, items);
+
+      if (currentErrors[name] === nextValidationErrors[name]) {
+        return currentErrors;
+      }
+
       const nextErrors = { ...currentErrors };
-      delete nextErrors[name];
+
+      if (nextValidationErrors[name]) {
+        nextErrors[name] = nextValidationErrors[name];
+      } else {
+        delete nextErrors[name];
+      }
+
       return nextErrors;
     });
+
+    if (submitError) {
+      setSubmitError('');
+    }
   }
 
   async function handleSubmit(event) {
@@ -51,6 +123,7 @@ function CheckoutPage() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setSubmitError('');
+      focusFirstInvalidField(validationErrors);
       return;
     }
 
@@ -64,6 +137,7 @@ function CheckoutPage() {
     } catch (error) {
       if (error.validationErrors) {
         setErrors(error.validationErrors);
+        focusFirstInvalidField(error.validationErrors);
         return;
       }
 
@@ -106,7 +180,12 @@ function CheckoutPage() {
       </div>
 
       <div className="checkout-layout">
-        <form className="checkout-form" onSubmit={handleSubmit} noValidate>
+        <form
+          ref={formRef}
+          className="checkout-form"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <section className="checkout-card">
             <div className="checkout-card__head">
               <h2 className="checkout-card__title">Контакты</h2>
@@ -116,11 +195,13 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Ф. И. О.</span>
                 <input
+                  ref={registerFieldRef('customerName')}
                   type="text"
                   name="customerName"
                   value={formValues.customerName}
                   onChange={handleFieldChange}
                   className={`checkout-input${errors.customerName ? ' is-invalid' : ''}`}
+                  aria-invalid={Boolean(errors.customerName)}
                 />
                 {errors.customerName ? (
                   <span className="checkout-field__error">{errors.customerName}</span>
@@ -130,11 +211,13 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">E-mail</span>
                 <input
+                  ref={registerFieldRef('email')}
                   type="email"
                   name="email"
                   value={formValues.email}
                   onChange={handleFieldChange}
                   className={`checkout-input${errors.email ? ' is-invalid' : ''}`}
+                  aria-invalid={Boolean(errors.email)}
                 />
                 {errors.email ? (
                   <span className="checkout-field__error">{errors.email}</span>
@@ -144,11 +227,13 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Телефон</span>
                 <input
+                  ref={registerFieldRef('phone')}
                   type="tel"
                   name="phone"
                   value={formValues.phone}
                   onChange={handleFieldChange}
                   className={`checkout-input${errors.phone ? ' is-invalid' : ''}`}
+                  aria-invalid={Boolean(errors.phone)}
                 />
                 {errors.phone ? (
                   <span className="checkout-field__error">{errors.phone}</span>
@@ -158,6 +243,7 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Telegram</span>
                 <input
+                  ref={registerFieldRef('telegram')}
                   type="text"
                   name="telegram"
                   value={formValues.telegram}
@@ -176,11 +262,13 @@ function CheckoutPage() {
             <label className="checkout-field checkout-field--full">
               <span className="checkout-field__label">Город</span>
               <input
+                ref={registerFieldRef('city')}
                 type="text"
                 name="city"
                 value={formValues.city}
                 onChange={handleFieldChange}
                 className={`checkout-input${errors.city ? ' is-invalid' : ''}`}
+                aria-invalid={Boolean(errors.city)}
               />
               {errors.city ? (
                 <span className="checkout-field__error">{errors.city}</span>
@@ -194,6 +282,11 @@ function CheckoutPage() {
                   className={`checkout-delivery-option${formValues.deliveryMethod === method.value ? ' is-active' : ''}`}
                 >
                   <input
+                    ref={
+                      method.value === DELIVERY_METHODS[0].value
+                        ? registerFieldRef('deliveryMethod')
+                        : undefined
+                    }
                     type="radio"
                     name="deliveryMethod"
                     value={method.value}
@@ -228,11 +321,13 @@ function CheckoutPage() {
               <label className="checkout-field checkout-field--span-2">
                 <span className="checkout-field__label">Улица</span>
                 <input
+                  ref={registerFieldRef('street')}
                   type="text"
                   name="street"
                   value={formValues.street}
                   onChange={handleFieldChange}
                   className={`checkout-input${errors.street ? ' is-invalid' : ''}`}
+                  aria-invalid={Boolean(errors.street)}
                 />
                 {errors.street ? (
                   <span className="checkout-field__error">{errors.street}</span>
@@ -242,11 +337,13 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Дом</span>
                 <input
+                  ref={registerFieldRef('house')}
                   type="text"
                   name="house"
                   value={formValues.house}
                   onChange={handleFieldChange}
                   className={`checkout-input${errors.house ? ' is-invalid' : ''}`}
+                  aria-invalid={Boolean(errors.house)}
                 />
                 {errors.house ? (
                   <span className="checkout-field__error">{errors.house}</span>
@@ -256,6 +353,7 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Подъезд</span>
                 <input
+                  ref={registerFieldRef('entrance')}
                   type="text"
                   name="entrance"
                   value={formValues.entrance}
@@ -267,6 +365,7 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Этаж</span>
                 <input
+                  ref={registerFieldRef('floor')}
                   type="text"
                   name="floor"
                   value={formValues.floor}
@@ -278,6 +377,7 @@ function CheckoutPage() {
               <label className="checkout-field">
                 <span className="checkout-field__label">Квартира / офис</span>
                 <input
+                  ref={registerFieldRef('apartmentOffice')}
                   type="text"
                   name="apartmentOffice"
                   value={formValues.apartmentOffice}
@@ -290,6 +390,7 @@ function CheckoutPage() {
             <label className="checkout-field checkout-field--full">
               <span className="checkout-field__label">Комментарий</span>
               <textarea
+                ref={registerFieldRef('comment')}
                 name="comment"
                 value={formValues.comment}
                 onChange={handleFieldChange}
