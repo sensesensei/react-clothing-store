@@ -45,6 +45,7 @@ REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
 5. `supabase/setup/05_auth_roles.sql`
 6. `supabase/setup/06_admin_policies.sql`
 7. `supabase/setup/07_admin_storage_policies.sql`
+8. `supabase/setup/08_guest_checkout_rpc.sql`
 
 ## Current State
 

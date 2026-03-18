@@ -10,16 +10,17 @@ function RegisterPage() {
       <div className="register-box">
         <h1>Доступ к админке</h1>
         <p className="auth-lead">
-          Самостоятельная регистрация в проекте закрыта. Аккаунты создаются вручную,
-          а доступ в <code>/admin</code> открывается только после назначения роли.
+          Самостоятельная регистрация в проекте закрыта. Аккаунты создаются
+          вручную, а доступ в <code>/admin</code> открывается только после
+          назначения роли.
         </p>
 
-        <p className="form-message is-info">
+        {/* <p className="form-message is-info">
           Сначала создай пользователя в Supabase Auth, затем укажи ему
           <code> role = admin </code>
           в таблице <code>profiles</code>. После этого можно входить через обычную
           страницу логина.
-        </p>
+        </p> */}
 
         <div className="register-actions">
           <Link to={isAdmin ? '/admin' : '/login'} className="submit-btn">

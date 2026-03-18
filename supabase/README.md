@@ -10,6 +10,7 @@
 - `supabase/setup/05_auth_roles.sql`
 - `supabase/setup/06_admin_policies.sql`
 - `supabase/setup/07_admin_storage_policies.sql`
+- `supabase/setup/08_guest_checkout_rpc.sql`
 
 Запускай их в этом порядке через `Supabase -> SQL Editor`.
 
@@ -21,6 +22,7 @@
 - `05_auth_roles.sql` создает `profiles`, helper `is_admin()` и sync профиля с `auth.users`.
 - `06_admin_policies.sql` заменяет временные public policies на admin-aware правила.
 - `07_admin_storage_policies.sql` оставляет публичное чтение картинок, но upload/delete делает admin-only.
+- `08_guest_checkout_rpc.sql` добавляет RPC для оформления заказа гостем без публичного доступа на чтение `orders`.
 
 Важно:
 - Скрипты написаны как повторно запускаемые, чтобы не бояться повторного `Run`.
@@ -34,5 +36,6 @@ where email = 'admin@example.com';
 ```
 
 - `03_public_policies.sql` и `04_product_images_storage.sql` нужны как промежуточная база; файлы `06` и `07` затем перезаписывают policies под admin auth.
+- После `06_admin_policies.sql` запусти `08_guest_checkout_rpc.sql`, если checkout должен работать для гостей без логина.
 
 Legacy-файлы в корне `supabase/` пока оставлены для совместимости, но для новых установок ориентируйся на `supabase/setup/`.
